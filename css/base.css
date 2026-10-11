@@ -1,0 +1,212 @@
+/* base.css — biến màu, font, nền tảng dùng chung */
+:root {
+  /* =====================================================================
+     BẢNG MÀU hiện tại: XANH NGỌC + CAM (theo màu phông nền studio và bó hoa trong ảnh cưới).
+     Bảng cũ (hồng nude): accent #b27085, bg #faf7f2 — xem bảng mẫu ở cuối file nếu muốn đổi lại.
+     BẢNG MÀU — muốn đổi màu cả thiệp, chỉ cần sửa các dòng trong khối này.
+     (Có sẵn vài bảng màu mẫu để dán ở cuối file css/base.css)
+     ===================================================================== */
+  --bg: #f8fbfb;          /* nền chính của thiệp */
+  --bg-alt: #edf6f7;      /* nền xen kẽ nhẹ ở một số khối (hai họ, lịch trình, lưu bút) */
+  --page: #dfeef0;        /* nền hai bên khi xem trên máy tính */
+  --paper: #ffffff;       /* khung ảnh bìa, thẻ mừng cưới, ô nhập liệu */
+  --ink: #2f4549;         /* chữ chính */
+  --ink-soft: #587378;    /* chữ phụ */
+  --muted: #8fa9ad;       /* chữ mờ, ô giữ chỗ ảnh */
+  --line: #d0e4e6;        /* đường kẻ, viền */
+  --accent: #c4562a;      /* màu nhấn: tiêu đề, nút, ngày cưới trên lịch */
+  --accent-deep: #a14320; /* màu nhấn khi rê chuột */
+  --accent-soft: #fbe8dd; /* nền nhạt của màu nhấn */
+  --on-accent: #ffffff;   /* chữ trên nền màu nhấn */
+
+  /* Màn mở thiệp + phần kết: hiện khi CHƯA có ảnh (gradient từ sáng sang tối) */
+  --cover-light: #4fb0c2;
+  --cover-dark: #1d6577;
+  --shade-rgb: 8 38 48;  /* lớp phủ tối trên ảnh bìa/ảnh kết để chữ trắng dễ đọc (R G B) */
+
+  /* Hiệu ứng */
+  --petal: #ffd7bf;       /* cánh hoa rơi trên màn mở thiệp */
+  --note-1: #fff1d6;      /* 4 màu giấy nhớ ở sổ lưu bút */
+  --note-2: #fde3d6;
+  --note-3: #dcf0ee;
+  --note-4: #e3ecf7;
+  --shadow-rgb: 20 70 85; /* màu đổ bóng (R G B) */
+  --ok: #4f7a52;          /* thông báo gửi thành công */
+  --err: #b24a4a;         /* thông báo lỗi */
+
+  /* VỊ TRÍ ẢNH — chỉnh để khuôn mặt không bị cắt khi ảnh bị cắt cho vừa khung.
+     Hai số là "ngang dọc": 50% 0% = canh sát mép trên, 50% 50% = giữa, 50% 100% = sát mép dưới */
+  --cover-pos: 50% 25%;   /* ảnh màn mở thiệp */
+  --hero-pos: 50% 30%;    /* ảnh khung trắng ở trang bìa */
+  --gallery-pos: 50% 30%; /* ảnh trong album */
+  --ending-pos: 50% 40%;  /* ảnh phần cảm ơn */
+  --cover-text-align: flex-end;  /* chữ trên màn mở thiệp: flex-end = ở dưới, center = giữa, flex-start = ở trên */
+  --cover-wide-pos: 50% 30%;     /* ảnh ngang cover-wide.jpg (chỉ dùng trên máy tính nếu bạn có file này) */
+
+  /* =====================================================================
+     FONT CHỮ — đổi tên font Google ở đầu mỗi dòng, thiệp tự tải font đó.
+     (Có sẵn vài bộ font mẫu ở cuối file này; font phải hỗ trợ tiếng Việt)
+     ===================================================================== */
+  --font-body: 'Noto Serif', 'Times New Roman', serif;       /* chữ đoạn văn, nút, ô nhập */
+  --font-display: 'Crimson Pro', 'Noto Serif', serif;        /* nhãn nhỏ, giờ, ngày, số đếm ngược */
+  --font-names: 'Great Vibes','Crimson Pro', 'Noto Serif', serif;          /* TÊN cô dâu chú rể (màn mở thiệp, bìa, phần kết) */
+  --names-weight: 300;                                       /* độ đậm tên: 300 mảnh, 400 thường, 600 đậm */
+  --names-spacing: .04em;                                    /* khoảng cách chữ của tên */
+  --names-scale: 1;                                          /* phóng to/nhỏ tên (font chữ viết tay nên để 1.2–1.4) */
+  --names-anim: letter;                                      /* letter = hiện từng chữ, word = hiện cả tên (dùng cho font chữ viết tay) */
+  --card-w: 480px;
+  --ease: cubic-bezier(.22, .7, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+[hidden] { display: none !important; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--ink);
+  background: var(--page);
+  -webkit-font-smoothing: antialiased;
+}
+body.is-locked { overflow: hidden; }
+
+img { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; cursor: pointer; }
+a { color: inherit; }
+
+/* Thẻ thiệp: một cột như điện thoại, căn giữa trên máy tính */
+.card {
+  position: relative;
+  max-width: var(--card-w);
+  min-height: 100vh;
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--bg);
+  box-shadow: 0 0 60px rgb(var(--shadow-rgb) / .10);
+}
+
+.section { position: relative; padding: 72px 28px; text-align: center; }
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: .8rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.title {
+  margin: 0 0 26px;
+  font-size: 1.4rem;
+  font-weight: 400;
+  letter-spacing: .02em;
+  color: var(--accent);
+}
+
+.divider { width: 1px; height: 44px; margin: 28px auto; background: var(--line); }
+
+/* Nút */
+.btn {
+  display: inline-block;
+  padding: 12px 30px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-body);
+  font-size: .9rem;
+  letter-spacing: .04em;
+  text-decoration: none;
+  transition: background .25s, transform .25s;
+}
+.btn:hover { background: var(--accent-deep); }
+.btn:active { transform: scale(.97); }
+.btn:disabled { opacity: .55; cursor: default; }
+.btn-ghost { background: transparent; color: var(--accent); }
+.btn-ghost:hover { background: var(--accent-soft); }
+.btn-block { display: block; width: 100%; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* Khung ảnh: hiện ô giữ chỗ khi chưa có file ảnh */
+.photo { position: relative; overflow: hidden; background: linear-gradient(135deg, var(--bg-alt), var(--line)); }
+.photo img { width: 100%; height: 100%; object-fit: cover; }
+.photo.no-img::after {
+  content: attr(data-label);
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  padding: 12px;
+  font-family: var(--font-display);
+  font-size: .85rem;
+  letter-spacing: .1em;
+  text-align: center;
+  color: var(--muted);
+}
+
+
+/* =========================================================================
+   BẢNG MÀU MẪU — muốn dùng bảng nào, chép các dòng của nó thay vào khối
+   "BẢNG MÀU" ở đầu file này (hoặc xoá dấu comment rồi để cuối file để đè lên).
+   Chỉ cần đổi các màu dưới đây là toàn bộ nền, chữ, nút, màn mở thiệp,
+   cánh hoa, giấy nhớ, sóng ở phần kết đều đổi theo.
+   -------------------------------------------------------------------------
+   A) XANH SAGE (nhẹ nhàng, tự nhiên)
+      --bg:#f7f8f3; --bg-alt:#eff2e8; --page:#e6eadf; --paper:#ffffff;
+      --ink:#3f4a3f; --ink-soft:#6f7a6c; --muted:#9aa596; --line:#d9e0cf;
+      --accent:#5f7d58; --accent-deep:#47633f; --accent-soft:#e3ebdc;
+      --cover-light:#8aa583; --cover-dark:#3f5a3c; --shade-rgb:20 30 20;
+      --petal:#e9f1e0; --note-1:#f4f3d8; --note-2:#e9f1de; --note-3:#e6efe9; --note-4:#e4ecf3;
+
+   B) ĐỎ ĐÔ + KEM (ấm, truyền thống)
+      --bg:#fbf6ee; --bg-alt:#f5ecdd; --page:#ece1cf; --paper:#fffdf9;
+      --ink:#4a3a36; --ink-soft:#7b6a63; --muted:#a8968a; --line:#e4d6c1;
+      --accent:#8c2f39; --accent-deep:#6e222b; --accent-soft:#f2dcd8;
+      --cover-light:#a8505a; --cover-dark:#5e1f27; --shade-rgb:35 15 15;
+      --petal:#f3d3cf; --note-1:#fff1cf; --note-2:#f9dcd6; --note-3:#efe6cf; --note-4:#e8e3ee;
+
+   C) XANH BỤI KIỂU HÀN QUỐC (trong trẻo, hiện đại)
+      --bg:#fbfbfa; --bg-alt:#f3f4f4; --page:#eceeee; --paper:#ffffff;
+      --ink:#44484c; --ink-soft:#767c82; --muted:#a3a9ae; --line:#dfe2e4;
+      --accent:#5f819b; --accent-deep:#47677f; --accent-soft:#e1eaf0;
+      --cover-light:#8ea9bd; --cover-dark:#3f566b; --shade-rgb:15 22 32;
+      --petal:#e3edf3; --note-1:#fbf3d9; --note-2:#e6eef4; --note-3:#e8efe9; --note-4:#ece8f1;
+
+   D) XANH NAVY + VÀNG ĐỒNG (sang trọng)
+      --bg:#f8f7f4; --bg-alt:#f0eee8; --page:#e8e6df; --paper:#ffffff;
+      --ink:#2f3a4a; --ink-soft:#66707e; --muted:#98a0ab; --line:#dcd9d0;
+      --accent:#9a7841; --accent-deep:#7a5e2f; --accent-soft:#f1e8d6;
+      --cover-light:#4d6585; --cover-dark:#1f2f4a; --shade-rgb:15 22 38;
+      --petal:#f0e4c8; --note-1:#fbf1d3; --note-2:#e6edf5; --note-3:#efe9dc; --note-4:#e2ebe9;
+   =========================================================================
+
+   =========================================================================
+   FONT MẪU — chép các dòng của bộ muốn dùng thay vào khối "FONT CHỮ" ở đầu file.
+   -------------------------------------------------------------------------
+   A) CỔ ĐIỂN (đang dùng)
+      --font-body:'Noto Serif','Times New Roman',serif; --font-display:'Crimson Pro','Noto Serif',serif;
+      --font-names:'Crimson Pro','Noto Serif',serif; --names-weight:300; --names-spacing:.04em; --names-scale:1; --names-anim:letter;
+
+   B) SANG TRỌNG (tiêu đề đậm nét kiểu tạp chí)
+      --font-body:'Lora','Times New Roman',serif; --font-display:'Playfair Display','Lora',serif;
+      --font-names:'Playfair Display','Lora',serif; --names-weight:400; --names-spacing:.03em; --names-scale:.92; --names-anim:letter;
+
+   C) THANH LỊCH (chữ thanh, tên ký tên kiểu thư pháp)
+      --font-body:'Noto Serif','Times New Roman',serif; --font-display:'Cormorant Garamond','Noto Serif',serif;
+      --font-names:'Great Vibes','Cormorant Garamond',cursive; --names-weight:400; --names-spacing:.01em; --names-scale:1.3; --names-anim:word;
+
+   D) HIỆN ĐẠI (không chân, gọn)
+      --font-body:'Be Vietnam Pro',Arial,sans-serif; --font-display:'Montserrat','Be Vietnam Pro',sans-serif;
+      --font-names:'Montserrat','Be Vietnam Pro',sans-serif; --names-weight:300; --names-spacing:.12em; --names-scale:.78; --names-anim:letter;
+
+   E) DỄ THƯƠNG (tròn trịa, chữ viết tay mềm)
+      --font-body:'Quicksand',Arial,sans-serif; --font-display:'Quicksand',sans-serif;
+      --font-names:'Dancing Script','Quicksand',cursive; --names-weight:600; --names-spacing:.01em; --names-scale:1.25; --names-anim:word;
+
+   F) LÃNG MẠN (chữ viết tay bay bổng)
+      --font-body:'Lora','Times New Roman',serif; --font-display:'Cormorant Garamond','Lora',serif;
+      --font-names:'Allura','Cormorant Garamond',cursive; --names-weight:400; --names-spacing:0; --names-scale:1.5; --names-anim:word;
+   ========================================================================= */
