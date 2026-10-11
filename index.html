@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Thiệp cưới Tiến Lợi</title>
+  <meta name="description" content="Trân trọng kính mời bạn đến dự lễ cưới của chúng mình.">
+  <meta name="theme-color" content="#faf7f2">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Thiệp cưới Tiến Lợi">
+  <meta property="og:description" content="Trân trọng kính mời bạn đến dự lễ cưới của chúng mình.">
+  <meta property="og:image" content="assets/photos/og.jpg">
+  <script>document.documentElement.classList.add('js');</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/sections.css">
+  <link rel="stylesheet" href="effects/effects.css">
+  <script src="js/fonts.js"></script>
+</head>
+<body class="is-locked">
+
+  <!-- 1. MÀN MỞ THIỆP -->
+  <header id="cover" class="cover" aria-label="Mở thiệp">
+    <div class="cover-side" aria-hidden="true"></div>
+    <div class="cover-frame">
+    <div class="photo cover-bg" data-label="Ảnh bìa: cover.jpg">
+      <img class="cover-tall" src="assets/photos/cover.jpg" alt="" onerror="this.parentNode.classList.add('no-img');this.remove()">
+    </div>
+    <div class="cover-shade"></div>
+    <canvas id="petals" aria-hidden="true"></canvas>
+    <button class="cover-skip" type="button" data-cover-open>SKIP</button>
+    <div class="cover-text">
+      <p class="cover-kicker">Wedding Invitation</p>
+      <h1 class="cover-names" aria-label="Cô dâu và chú rể">
+        <span class="cover-name" data-bind="bride.short"></span>
+        <span class="cover-amp">&amp;</span>
+        <span class="cover-name" data-bind="groom.short"></span>
+      </h1>
+      <p class="cover-date" id="coverDate"></p>
+      <button class="cover-open" type="button" data-cover-open>Mở thiệp</button>
+    </div>
+    </div>
+  </header>
+
+  <!-- Nhạc nền -->
+  <button id="musicBtn" class="music-btn" type="button" aria-label="Bật/tắt nhạc" hidden>
+    <span class="music-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+  </button>
+
+  <main class="card" id="card">
+
+    <!-- 2. BÌA -->
+    <section id="hero" class="section hero">
+      <div data-reveal>
+        <p class="hero-date" id="heroDate"></p>
+        <p class="eyebrow" id="heroWeekday"></p>
+      </div>
+      <figure class="hero-frame" data-reveal data-delay="150">
+        <div class="photo hero-photo" data-label="Ảnh bìa thiệp: hero.jpg">
+          <img src="assets/photos/hero.jpg" alt="Ảnh cưới" onerror="this.parentNode.classList.add('no-img');this.remove()">
+        </div>
+      </figure>
+      <h2 class="hero-names" data-reveal data-delay="250">
+        <span data-bind="bride.short"></span><span class="hero-amp">&amp;</span><span data-bind="groom.short"></span>
+      </h2>
+    </section>
+
+    <!-- 3. LỜI MỜI -->
+    <section id="invite" class="section invite">
+      <p class="eyebrow" data-reveal id="inviteLead"></p>
+      <p class="guest-name" id="guestName" data-reveal data-delay="100"></p>
+      <div class="invite-body" id="inviteBody" data-reveal data-delay="200"></div>
+    </section>
+
+    <!-- 4. HAI HỌ + CÁC BUỔI LỄ -->
+    <section id="families" class="section families">
+      <p class="eyebrow" data-reveal>Trân trọng báo tin</p>
+      <div class="family-cols" data-reveal data-delay="100">
+        <div class="family-col" id="brideFamily"></div>
+        <div class="family-col" id="groomFamily"></div>
+      </div>
+      <div class="divider" aria-hidden="true"></div>
+      <p class="eyebrow" data-reveal>Hôn lễ của chúng tôi</p>
+      <h3 class="couple-line" data-reveal>
+        <span data-bind="bride.full"></span> &amp; <span data-bind="groom.full"></span>
+      </h3>
+      <div class="ceremony-list" id="ceremonies"></div>
+    </section>
+
+    <!-- 5. LỊCH + ĐẾM NGƯỢC -->
+    <section id="calendar" class="section calendar">
+      <h3 class="cal-date" id="calDate" data-reveal></h3>
+      <p class="cal-sub" id="calSub" data-reveal></p>
+      <div class="cal-grid" id="calGrid" data-reveal></div>
+      <div class="countdown" id="countdown" data-reveal>
+        <div><b id="cdD">--</b><span>Ngày</span></div>
+        <em>:</em>
+        <div><b id="cdH">--</b><span>Giờ</span></div>
+        <em>:</em>
+        <div><b id="cdM">--</b><span>Phút</span></div>
+        <em>:</em>
+        <div><b id="cdS">--</b><span>Giây</span></div>
+      </div>
+      <p class="cd-note" id="cdNote" data-reveal></p>
+      <a class="btn btn-ghost" id="addCal" target="_blank" rel="noopener" data-reveal>Thêm vào Google Calendar</a>
+    </section>
+
+    <!-- 6. LỊCH TRÌNH -->
+    <section id="schedule" class="section schedule">
+      <h3 class="title" data-reveal>Lịch trình ngày cưới</h3>
+      <ol class="timeline" id="timeline"></ol>
+    </section>
+
+    <!-- 7. ĐỊA ĐIỂM -->
+    <section id="location" class="section location">
+      <h3 class="title" data-reveal>Địa điểm tổ chức</h3>
+      <p class="loc-name" id="locName" data-reveal></p>
+      <p class="loc-addr" id="locAddr" data-reveal></p>
+      <div class="map-wrap" id="mapWrap" data-reveal></div>
+      <p class="loc-note" id="locNote" data-reveal></p>
+      <a class="btn" id="locBtn" target="_blank" rel="noopener" data-reveal>Chỉ đường</a>
+    </section>
+
+    <!-- 8. ALBUM -->
+    <section id="gallery" class="section gallery">
+      <h3 class="title" data-reveal>Album cưới</h3>
+      <div class="gallery-wrap" id="galleryWrap" data-reveal>
+        <div class="gallery-grid" id="galleryGrid"></div>
+        <div class="gallery-fade" id="galleryFade"></div>
+      </div>
+      <button class="more-btn" id="galleryMore" type="button">Xem thêm <span aria-hidden="true">⌄</span></button>
+    </section>
+
+    <!-- 9. SỔ LƯU BÚT -->
+    <section id="guestbook" class="section guestbook">
+      <h3 class="title" data-reveal>Sổ lưu bút</h3>
+      <div class="notes" id="notes" data-reveal><p class="notes-empty">Đang tải lời chúc…</p></div>
+      <p class="notes-hint" id="notesHint" data-reveal></p>
+    </section>
+
+    <!-- 10. MỪNG CƯỚI -->
+    <section id="gift" class="section gift">
+      <h3 class="title" data-reveal>Thông tin mừng cưới</h3>
+      <p class="gift-lead" data-reveal>Nếu không thể đến dự, bạn có thể gửi lời chúc và quà mừng qua thông tin dưới đây. Gia đình xin chân thành cảm ơn.</p>
+      <div class="gift-list" id="giftList"></div>
+    </section>
+
+    <!-- 11. RSVP -->
+    <section id="rsvp" class="section rsvp">
+      <h3 class="title" data-reveal>Xác nhận tham dự</h3>
+      <p class="rsvp-lead" data-reveal>Bạn vui lòng cho chúng mình biết để chuẩn bị chu đáo hơn nhé.</p>
+      <button class="btn" id="rsvpOpen" type="button" data-reveal>Xác nhận tham dự</button>
+    </section>
+
+    <!-- 12. LỜI CẢM ƠN -->
+    <footer id="ending" class="ending">
+      <div class="photo ending-bg" data-label="Ảnh kết: ending.jpg">
+        <img src="assets/photos/ending.jpg" alt="" loading="lazy" onerror="this.parentNode.classList.add('no-img');this.remove()">
+      </div>
+      <div class="ending-shade"></div>
+      <svg class="wave" viewBox="0 24 150 28" preserveAspectRatio="none" aria-hidden="true">
+        <defs><path id="wavePath" d="M-160 44c30 0 58-18 88-18s58 18 88 18 58-18 88-18 58 18 88 18v44h-352z"/></defs>
+        <g class="wave-layers">
+          <use href="#wavePath" x="48" y="0"/>
+          <use href="#wavePath" x="48" y="3"/>
+          <use href="#wavePath" x="48" y="5"/>
+          <use href="#wavePath" x="48" y="7"/>
+        </g>
+      </svg>
+      <div class="ending-text" data-reveal>
+        <p id="thanksText"></p>
+        <p class="ending-names"><span data-bind="bride.short"></span> &amp; <span data-bind="groom.short"></span></p>
+        <p class="ending-foot" id="footText"></p>
+      </div>
+    </footer>
+  </main>
+
+  <!-- FORM RSVP (bottom sheet) -->
+  <div class="sheet" id="rsvpSheet" role="dialog" aria-modal="true" aria-labelledby="rsvpTitle" hidden>
+    <div class="sheet-backdrop" data-close></div>
+    <form class="sheet-panel" id="rsvpForm" novalidate autocomplete="off">
+      <button class="sheet-x" type="button" data-close aria-label="Đóng">×</button>
+      <h4 id="rsvpTitle">Xác nhận tham dự</h4>
+
+      <label class="field">
+        <span>Họ và tên *</span>
+        <input type="text" name="name" maxlength="80" required placeholder="Nhập họ và tên">
+      </label>
+
+      <label class="field">
+        <span>Bạn là khách của ai? *</span>
+        <select name="side" required></select>
+      </label>
+
+      <fieldset class="field">
+        <legend>Bạn sẽ tham dự chứ? *</legend>
+        <div class="seg">
+          <label><input type="radio" name="attend" value="Có tham dự" checked><span>Có tham dự</span></label>
+          <label><input type="radio" name="attend" value="Không tham dự"><span>Rất tiếc, không đến được</span></label>
+        </div>
+      </fieldset>
+
+      <label class="field" id="countField">
+        <span>Số người tham dự</span>
+        <select name="count"></select>
+      </label>
+
+      <label class="field">
+        <span>Lời chúc</span>
+        <textarea name="wish" rows="3" maxlength="500" placeholder="Gửi đôi lời chúc đến cô dâu chú rể…"></textarea>
+      </label>
+
+      <!-- Bẫy spam: người thật không thấy ô này -->
+      <input class="hp" type="text" name="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <p class="form-msg" id="formMsg" role="status" aria-live="polite"></p>
+      <button class="btn btn-block" type="submit" id="rsvpSubmit">Gửi xác nhận</button>
+    </form>
+  </div>
+
+  <!-- Xem ảnh lớn -->
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lb-close" type="button" aria-label="Đóng">×</button>
+    <button class="lb-nav lb-prev" type="button" aria-label="Ảnh trước">‹</button>
+    <img id="lbImg" alt="">
+    <button class="lb-nav lb-next" type="button" aria-label="Ảnh sau">›</button>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/countdown.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/guestbook.js"></script>
+  <script src="js/rsvp.js"></script>
+  <script src="effects/reveal.js"></script>
+  <script src="effects/petals.js"></script>
+  <script src="effects/cover.js"></script>
+  <script src="effects/autoscroll.js"></script>
+  <script src="effects/music.js"></script>
+  <script src="effects/lightbox.js"></script>
+</body>
+</html>
