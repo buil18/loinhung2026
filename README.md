@@ -1,4 +1,4 @@
-# Thiệp cưới online — Tiến Lợi
+# Thiệp cưới online creat by Tiến Lợi
 
 Thiệp cưới tĩnh (HTML/CSS/JS thuần, không cần build), chạy trực tiếp trên GitHub Pages.
 Xác nhận tham dự và lời chúc được lưu vào Google Sheet qua Google Apps Script.
