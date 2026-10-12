@@ -19,7 +19,9 @@
     if (days > 0) {
       note.appendChild(document.createTextNode('Còn '));
       note.appendChild(W.el('strong', '', String(days)));
-      note.appendChild(document.createTextNode(' ngày nữa là đến lễ cưới của ' + names + '.'));
+      note.appendChild(document.createTextNode(' ngày nữa là đến lễ cưới của '));
+      note.appendChild(W.el('span', 'cd-names', names));
+      note.appendChild(document.createTextNode('.'));
     } else if (days === 0) {
       note.textContent = 'Hôm nay là ngày vui của ' + names + '!';
     } else {
