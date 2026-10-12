@@ -32,10 +32,10 @@
     <button class="cover-skip" type="button" data-cover-open>SKIP</button>
     <div class="cover-text">
       <p class="cover-kicker">Wedding Invitation</p>
-      <h1 class="cover-names" aria-label="Tiến Lợi và cô dâu">
-        <span class="cover-name" data-bind="groom.short"></span>
-        <span class="cover-amp">&amp;</span>
+      <h1 class="cover-names" aria-label="Cô dâu và chú rể">
         <span class="cover-name" data-bind="bride.short"></span>
+        <span class="cover-amp">&amp;</span>
+        <span class="cover-name" data-bind="groom.short"></span>
       </h1>
       <p class="cover-date" id="coverDate"></p>
       <button class="cover-open" type="button" data-cover-open>Mở thiệp</button>
@@ -62,7 +62,7 @@
         </div>
       </figure>
       <h2 class="hero-names" data-reveal data-delay="250">
-        <span data-bind="groom.short"></span><span class="hero-amp">&amp;</span><span data-bind="bride.short"></span>
+        <span data-bind="bride.short"></span><span class="hero-amp">&amp;</span><span data-bind="groom.short"></span>
       </h2>
     </section>
 
@@ -73,18 +73,11 @@
       <div class="invite-body" id="inviteBody" data-reveal data-delay="200"></div>
     </section>
 
-    <!-- 4. HAI HỌ + CÁC BUỔI LỄ -->
+    <!-- 4. CÁC BUỔI LỄ -->
     <section id="families" class="section families">
-      <p class="eyebrow" data-reveal>Trân trọng báo tin</p>
-      <div class="family-cols" data-reveal data-delay="100">
-        <div class="family-col" id="groomFamily"></div>
-        <div class="family-vrule" aria-hidden="true"></div>
-        <div class="family-col" id="brideFamily"></div>
-      </div>
-      <div class="divider" aria-hidden="true"></div>
       <p class="eyebrow" data-reveal>Hôn lễ của chúng tôi</p>
       <h3 class="couple-line" data-reveal>
-        <span data-bind="groom.full"></span> &amp; <span data-bind="bride.full"></span>
+        <span data-bind="bride.full"></span> &amp; <span data-bind="groom.full"></span>
       </h3>
       <div class="ceremony-list" id="ceremonies"></div>
     </section>
@@ -140,18 +133,16 @@
       <p class="notes-hint" id="notesHint" data-reveal></p>
     </section>
 
-    <!-- 10. MỪNG CƯỚI -->
-    <section id="gift" class="section gift">
-      <h3 class="title" data-reveal>Thông tin mừng cưới</h3>
-      <p class="gift-lead" data-reveal>Nếu không thể đến dự, bạn có thể gửi lời chúc và quà mừng qua thông tin dưới đây. Gia đình xin chân thành cảm ơn.</p>
-      <div class="gift-list" id="giftList"></div>
-    </section>
-
-    <!-- 11. RSVP -->
+    <!-- 10. XÁC NHẬN THAM DỰ (đặt trước phần mừng cưới) -->
     <section id="rsvp" class="section rsvp">
       <h3 class="title" data-reveal>Xác nhận tham dự</h3>
       <p class="rsvp-lead" data-reveal>Bạn vui lòng cho chúng mình biết để chuẩn bị chu đáo hơn nhé.</p>
       <button class="btn" id="rsvpOpen" type="button" data-reveal>Xác nhận tham dự</button>
+    </section>
+
+    <!-- 11. MỪNG CƯỚI: tên - số tài khoản - mã QR -->
+    <section id="gift" class="section gift">
+      <div class="gift-list" id="giftList"></div>
     </section>
 
     <!-- 12. LỜI CẢM ƠN -->
@@ -171,7 +162,7 @@
       </svg>
       <div class="ending-text" data-reveal>
         <p id="thanksText"></p>
-        <p class="ending-names"><span data-bind="groom.short"></span> &amp; <span data-bind="bride.short"></span></p>
+        <p class="ending-names"><span data-bind="bride.short"></span> &amp; <span data-bind="groom.short"></span></p>
         <p class="ending-foot" id="footText"></p>
       </div>
     </footer>
@@ -242,5 +233,5 @@
   <script src="effects/autoscroll.js"></script>
   <script src="effects/music.js"></script>
   <script src="effects/lightbox.js"></script>
-</body> 
+</body>
 </html>
