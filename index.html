@@ -32,10 +32,10 @@
     <button class="cover-skip" type="button" data-cover-open>SKIP</button>
     <div class="cover-text">
       <p class="cover-kicker">Wedding Invitation</p>
-      <h1 class="cover-names" aria-label="Cô dâu và chú rể">
-        <span class="cover-name" data-bind="bride.short"></span>
-        <span class="cover-amp">&amp;</span>
+      <h1 class="cover-names" aria-label="Tiến Lợi và cô dâu">
         <span class="cover-name" data-bind="groom.short"></span>
+        <span class="cover-amp">&amp;</span>
+        <span class="cover-name" data-bind="bride.short"></span>
       </h1>
       <p class="cover-date" id="coverDate"></p>
       <button class="cover-open" type="button" data-cover-open>Mở thiệp</button>
@@ -62,7 +62,7 @@
         </div>
       </figure>
       <h2 class="hero-names" data-reveal data-delay="250">
-        <span data-bind="bride.short"></span><span class="hero-amp">&amp;</span><span data-bind="groom.short"></span>
+        <span data-bind="groom.short"></span><span class="hero-amp">&amp;</span><span data-bind="bride.short"></span>
       </h2>
     </section>
 
@@ -77,13 +77,14 @@
     <section id="families" class="section families">
       <p class="eyebrow" data-reveal>Trân trọng báo tin</p>
       <div class="family-cols" data-reveal data-delay="100">
-        <div class="family-col" id="brideFamily"></div>
         <div class="family-col" id="groomFamily"></div>
+        <div class="family-vrule" aria-hidden="true"></div>
+        <div class="family-col" id="brideFamily"></div>
       </div>
       <div class="divider" aria-hidden="true"></div>
       <p class="eyebrow" data-reveal>Hôn lễ của chúng tôi</p>
       <h3 class="couple-line" data-reveal>
-        <span data-bind="bride.full"></span> &amp; <span data-bind="groom.full"></span>
+        <span data-bind="groom.full"></span> &amp; <span data-bind="bride.full"></span>
       </h3>
       <div class="ceremony-list" id="ceremonies"></div>
     </section>
@@ -170,7 +171,7 @@
       </svg>
       <div class="ending-text" data-reveal>
         <p id="thanksText"></p>
-        <p class="ending-names"><span data-bind="bride.short"></span> &amp; <span data-bind="groom.short"></span></p>
+        <p class="ending-names"><span data-bind="groom.short"></span> &amp; <span data-bind="bride.short"></span></p>
         <p class="ending-foot" id="footText"></p>
       </div>
     </footer>
@@ -241,5 +242,5 @@
   <script src="effects/autoscroll.js"></script>
   <script src="effects/music.js"></script>
   <script src="effects/lightbox.js"></script>
-</body>
+</body> 
 </html>

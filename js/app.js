@@ -80,16 +80,6 @@
   var body = $('#inviteBody');
   C.text.inviteBody.forEach(function (t) { body.appendChild(W.el('p', '', t)); });
 
-  /* ---------- hai họ ---------- */
-  function family(host, label, p) {
-    host.appendChild(W.el('p', 'family-title', label));
-    if (p.father) host.appendChild(W.el('p', 'family-name', p.father));
-    if (p.mother) host.appendChild(W.el('p', 'family-name', p.mother));
-    if (p.address) host.appendChild(W.el('p', 'family-addr', p.address));
-  }
-  family($('#groomFamily'), 'Nhà trai', C.groom);
-  family($('#brideFamily'), 'Nhà gái', C.bride);
-
   /* ---------- các buổi lễ ---------- */
   var cer = $('#ceremonies');
   events.forEach(function (e, i) {
@@ -172,32 +162,37 @@
     moreBtn.hidden = true;
   });
 
-  /* ---------- mừng cưới ---------- */
+  /* ---------- mừng cưới: mỗi người một thẻ gồm tên - ngân hàng - số tài khoản - mã QR ----------
+     Thẻ nào còn chữ giữ chỗ [ ... ] trong js/config.js thì tạm ẩn, điền xong sẽ tự hiện. */
   var gl = $('#giftList');
   C.gifts.forEach(function (g) {
+    if (/[\[\]]/.test([g.holder, g.bank, g.number].join(''))) return;
     var box = W.el('div', 'gift-card');
     box.setAttribute('data-reveal', '');
     box.appendChild(W.el('p', 'gift-side', g.side));
     if (g.qr) {
+      var wrap = W.el('div', 'gift-qr-wrap');
       var qr = W.el('div', 'photo gift-qr');
-      qr.setAttribute('data-label', 'QR');
       var qi = document.createElement('img');
       qi.alt = 'Mã QR ' + g.side; qi.src = g.qr; qi.loading = 'lazy';
-      qi.onerror = function () { this.parentNode.remove(); };
+      qi.onerror = function () { wrap.remove(); };          // chưa có file QR thì ẩn luôn khung QR
       qr.appendChild(qi);
-      box.appendChild(qr);
+      wrap.appendChild(qr);
+      wrap.appendChild(W.el('p', 'gift-qr-note', 'Quét mã để chuyển khoản'));
+      box.appendChild(wrap);
     }
     box.appendChild(W.el('p', 'gift-holder', g.holder));
     box.appendChild(W.el('p', 'gift-bank', g.bank));
     var line = W.el('div', 'gift-num');
-    line.appendChild(W.el('span', '', g.number));
-    var cp = W.el('button', 'copy', 'Sao chép');
+    line.appendChild(W.el('span', 'gift-number', g.number));
+    var cp = W.el('button', 'copy', 'Sao chép số tài khoản');
     cp.type = 'button';
     cp.addEventListener('click', function () { W.copy(g.number); });
     line.appendChild(cp);
     box.appendChild(line);
     gl.appendChild(box);
   });
+  if (!gl.children.length) { var gs = $('#gift'); if (gs) gs.hidden = true; }
 
   W.copy = function (text) {
     function done() { W.toast('Đã sao chép số tài khoản'); }

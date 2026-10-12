@@ -16,11 +16,6 @@
 
 /* ---------- 4. Hai họ + lễ ---------- */
 .families { background: linear-gradient(var(--bg), var(--bg-alt)); }
-.family-cols { display: flex; flex-direction: column; align-items: center; gap: 18px; max-width: 320px; margin: 20px auto 0; text-align: center; }
-.family-col + .family-col { padding-top: 18px; border-top: 1px solid var(--line); width: 56%; min-width: 180px; }
-.family-title { margin-bottom: 6px; font-family: var(--font-display); letter-spacing: .2em; text-transform: uppercase; font-size: .8rem; color: var(--accent); }
-.family-name { font-size: .88rem; line-height: 1.6; }
-.family-addr { text-wrap: balance; max-width: 300px; margin: 0 auto; font-size: .84rem; line-height: 1.6; color: var(--ink-soft); }
 .couple-line { font-family: var(--font-names); font-size: 1.8rem; margin: 8px 0 34px; font-weight: 400; letter-spacing: .02em; }
 
 .ceremony { padding: 26px 0; border-top: 1px solid var(--line); }
@@ -100,16 +95,21 @@
 
 /* ---------- 10. Mừng cưới ---------- */
 .gift-lead { max-width: 320px; margin: 0 auto 28px; font-size: .88rem; color: var(--ink-soft); }
-.gift-list { display: grid; gap: 18px; }
-.gift-card { padding: 26px 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
-.gift-side { margin-bottom: 14px; font-family: var(--font-display); letter-spacing: .2em; text-transform: uppercase; font-size: .85rem; color: var(--accent); }
-.gift-qr { width: 150px; height: 150px; margin: 0 auto 16px; border-radius: 6px; }
-.gift-holder { font-weight: 600; }
-.gift-bank { font-size: .85rem; color: var(--ink-soft); }
-.gift-num { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 8px; font-family: var(--font-display); font-size: 1.2rem; letter-spacing: .08em; }
-.copy { padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; background: none; font-family: var(--font-body); font-size: .72rem; letter-spacing: 0; color: var(--ink-soft); }
+.gift-list { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+.gift-card { width: 100%; max-width: 340px; padding: 26px 22px 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); box-shadow: 0 12px 32px rgb(var(--shadow-rgb) / .08); }
+.gift-side { margin: 0 0 20px; padding-bottom: 14px; border-bottom: 1px solid var(--line); font-family: var(--font-display); letter-spacing: .24em; text-transform: uppercase; font-size: .85rem; color: var(--accent); }
+.gift-qr-wrap { margin-bottom: 20px; }
+.gift-qr { width: 176px; height: 176px; margin: 0 auto; padding: 6px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.gift-qr img { object-fit: contain; }
+.gift-qr-note { margin-top: 8px; font-size: .74rem; letter-spacing: .06em; color: var(--muted); }
+.gift-holder { font-weight: 600; font-size: .95rem; letter-spacing: .08em; text-transform: uppercase; }
+.gift-bank { margin-top: 2px; font-size: .85rem; color: var(--ink-soft); }
+.gift-num { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 14px; }
+.gift-number { font-family: var(--font-display); font-size: 1.5rem; letter-spacing: .1em; line-height: 1.2; color: var(--ink); }
+.copy { padding: 7px 20px; border: 1px solid var(--line); border-radius: 999px; background: none; font-family: var(--font-body); font-size: .78rem; letter-spacing: .02em; color: var(--ink-soft); transition: border-color .2s, color .2s; }
 .copy:hover { border-color: var(--accent); color: var(--accent); }
 
+.rsvp { padding-bottom: 28px; }
 /* ---------- 11. RSVP ---------- */
 .rsvp-lead { max-width: 300px; margin: 0 auto 24px; font-size: .9rem; color: var(--ink-soft); }
 
