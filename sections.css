@@ -42,12 +42,13 @@
 .cal-row .is-sun { color: var(--accent); }
 .cal-row .is-wedding { width: 36px; justify-self: center; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-weight: 600; }
 
-.countdown { display: flex; justify-content: center; align-items: flex-start; gap: 10px; }
-.countdown div { min-width: 56px; }
+.countdown { display: flex; justify-content: center; align-items: flex-start; gap: 6px; }
+.countdown div { min-width: 62px; text-align: center; }
 .countdown b { display: block; font-family: var(--font-display); font-weight: 400; font-size: 2rem; line-height: 1.2; letter-spacing: .04em; }
-.countdown span { font-size: .7rem; letter-spacing: .12em; color: var(--ink-soft); }
-.countdown em { font-style: normal; font-family: var(--font-display); font-size: 1.6rem; line-height: 1.4; color: var(--line); }
-.cd-note { max-width: 320px; margin: 18px auto 24px; font-size: .88rem; color: var(--ink-soft); }
+.countdown span { display: block; margin-top: 4px; font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
+.countdown em { font-style: normal; font-family: var(--font-display); font-size: 1.7rem; line-height: 1.2; color: var(--accent); opacity: .45; }
+.cd-note { max-width: 300px; margin: 22px auto 26px; padding-top: 18px; border-top: 1px solid var(--line); font-size: .92rem; line-height: 1.75; color: var(--ink-soft); text-wrap: balance; }
+.cd-names { white-space: nowrap; color: var(--ink); }
 .cd-note strong { color: var(--accent); font-weight: 600; }
 
 /* ---------- 6. Lịch trình ---------- */
