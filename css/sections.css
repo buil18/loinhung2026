@@ -15,7 +15,7 @@
 .invite-body p { max-width: 340px; margin: 0 auto 14px; color: var(--ink-soft); font-size: .93rem; }
 
 /* ---------- 4. Hai họ + lễ ---------- */
-.families { background: linear-gradient(var(--bg), var(--bg-alt)); }
+.families { padding-bottom: 20px; background: linear-gradient(var(--bg), var(--bg-alt)); }
 .couple-line { font-family: var(--font-names); font-size: 1.8rem; margin: 8px 0 34px; font-weight: 400; letter-spacing: .02em; }
 
 .ceremony { padding: 26px 0; border-top: 1px solid var(--line); }
@@ -51,14 +51,16 @@
 .cd-names { white-space: nowrap; color: var(--ink); }
 .cd-note strong { color: var(--accent); font-weight: 600; }
 
-/* ---------- 6. Lịch trình ---------- */
-.schedule { background: linear-gradient(var(--bg-alt), var(--bg)); }
+/* ---------- 5. Lịch trình (nối liền ngay dưới các buổi lễ, cùng kiểu chữ với phần lễ) ---------- */
+.schedule { display: flow-root; padding-top: 0; background: linear-gradient(var(--bg-alt), var(--bg)); }
+.schedule .divider { margin-top: 8px; }
+.sched-head { margin: 0 0 22px; font-size: .85rem; font-weight: 400; letter-spacing: .26em; text-transform: uppercase; color: var(--ink-soft); }
 .timeline { position: relative; list-style: none; padding: 0; max-width: 340px; margin: 0 auto; }
 .timeline::before { content: ''; position: absolute; top: 14px; bottom: 14px; left: 50%; width: 1px; background: var(--line); }
-.tl-item { display: grid; grid-template-columns: 1fr 28px 1fr; align-items: center; padding: 14px 0; }
-.tl-time { text-align: right; font-family: var(--font-display); font-size: 1.15rem; font-weight: 500; letter-spacing: .04em; }
-.tl-dot { justify-self: center; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--bg); position: relative; }
-.tl-title { text-align: left; font-size: .9rem; }
+.tl-item { display: grid; grid-template-columns: 1fr 28px 1fr; align-items: center; padding: 11px 0; }
+.tl-time { text-align: right; font-family: var(--font-display); font-size: 1.3rem; font-weight: 500; letter-spacing: .04em; color: var(--ink); }
+.tl-dot { justify-self: center; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--bg-alt); position: relative; }
+.tl-title { text-align: left; font-size: .92rem; color: var(--ink-soft); }
 
 /* ---------- 7. Địa điểm ---------- */
 .loc-name { font-size: 1.1rem; font-weight: 600; }
