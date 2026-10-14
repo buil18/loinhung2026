@@ -46,7 +46,7 @@ window.WEDDING_CONFIG = {
   },
 
   /* 6. Album: ảnh đặt trong assets/images/ theo tên gallery-01.jpg, gallery-02.jpg ... */
-  gallery: { count: 16, visible: 6, prefix: "assets/photos/gallery-", ext: ".jpg" },
+  gallery: { count: 15, visible: 6, prefix: "assets/photos/gallery-", ext: ".jpg" },
 
   /* 7. Mừng cưới. qr: ảnh mã QR đặt trong assets/qr/ (xoá dòng qr nếu chưa có) */
   gifts: [
@@ -65,8 +65,7 @@ window.WEDDING_CONFIG = {
       "Giữa bao điều bình dị của cuộc sống, chúng mình tìm thấy nhau và cùng quyết định đi tiếp một đời.",
       "Sự hiện diện của bạn sẽ làm ngày vui của chúng mình thêm trọn vẹn."
     ],
-    thanks: "Cảm ơn bạn đã dành tình cảm và thời gian cho ngày đặc biệt của chúng mình.",
-    footer: "Với tất cả yêu thương"
+    thanks: "Cảm ơn vì đã luôn yêu thương và đồng hành cùng ngày đặc biệt này.",
   },
 
   /* 10. Các lựa chọn trong form RSVP — GIỮ NGUYÊN để khớp với backend/Code.gs */
