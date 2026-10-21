@@ -28,7 +28,7 @@
   /* ---- mở / đóng ---- */
   function open() {
     lastFocus = document.activeElement;
-    msg.textContent = ''; msg.className = 'form-msg';
+    msg.textContent = ''; msg.className = 'form-msg'; if (!submit.disabled) submit.textContent = 'Gửi xác nhận';
     sheet.hidden = false;
     requestAnimationFrame(function () { sheet.classList.add('is-open'); });
     document.body.classList.add('is-locked');
@@ -80,24 +80,47 @@
     };
 
     submit.disabled = true;
-    say('Đang gửi…');
+    submit.textContent = 'Đang gửi…';
+    say('Đang gửi, bạn đợi một chút nhé…');
 
-    /* Apps Script không trả header CORS cho POST, nên dùng no-cors + text/plain:
-       trình duyệt vẫn gửi đi bình thường, chỉ là không đọc được phản hồi. */
+    /* Gửi dạng text/plain để Google Apps Script nhận được, và ĐỌC phản hồi để biết chắc đã lưu hay chưa.
+       Quá 20 giây không có phản hồi thì coi là lỗi để khách bấm gửi lại. */
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 20000);
+
+    function fail(text) {
+      clearTimeout(timer);
+      say(text, 'is-err');
+      submit.disabled = false;
+      submit.textContent = 'Gửi lại';
+    }
+
     fetch(C.apiUrl, {
       method: 'POST',
-      mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
-    }).then(function () {
-      try { localStorage.setItem('wedding_rsvp_name', name); } catch (err) {}
-      say('Cảm ơn bạn! Chúng mình đã nhận được xác nhận.', 'is-ok');
-      if (wish) W.addWish({ name: name, wish: wish });
-      form.elements.wish.value = '';
-      setTimeout(function () { close(); submit.disabled = false; W.toast('Đã gửi xác nhận tham dự'); }, 1500);
+      body: JSON.stringify(payload),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function (r) {
+      return r.json();
+    }).then(function (res) {
+      clearTimeout(timer);
+      if (res && res.ok) {
+        try { localStorage.setItem('wedding_rsvp_name', name); } catch (err) {}
+        say('✓ “Cảm ơn bạn đã hồi đáp. Hẹn gặp bạn trong ngày vui!”', 'is-ok');
+        submit.textContent = 'Đã gửi';
+        if (wish) W.addWish({ name: name, wish: wish });
+        form.elements.wish.value = '';
+        setTimeout(function () {
+          close();
+          submit.disabled = false;
+          submit.textContent = 'Gửi xác nhận';
+          W.toast('Đã gửi xác nhận tham dự. Cảm ơn bạn!');
+        }, 2200);
+      } else {
+        fail('“Rất tiếc, xác nhận chưa được gửi đi. Bạn vui lòng thử lại nhé!”' + (res && res.error ? ' (' + res.error + ')' : '') + '. Bạn bấm "Gửi lại" giúp mình nhé.');
+      }
     }).catch(function () {
-      say('Không gửi được, bạn kiểm tra mạng và thử lại nhé.', 'is-err');
-      submit.disabled = false;
+      fail('Rất tiếc, xác nhận chưa được gửi đi. Bạn vui lòng thử lại nhé! bạn bấm "Gửi lại" nhé.');
     });
   });
 })();

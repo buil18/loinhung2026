@@ -55,8 +55,7 @@
     if (v != null) n.textContent = v;
   });
 
-  var groomFirst = document.body.getAttribute('data-first') === 'groom';
-  document.title = 'Thiệp cưới ' + (groomFirst ? C.groom.short + ' & ' + C.bride.short : C.bride.short + ' & ' + C.groom.short);
+  document.title = 'Thiệp cưới ' + C.bride.short + ' & ' + C.groom.short;
 
   /* Thanh trạng thái trình duyệt điện thoại đổi theo màu nền --bg */
   var tc = document.querySelector('meta[name=theme-color]');
@@ -122,7 +121,7 @@
     f.loading = 'lazy';
     f.title = 'Bản đồ địa điểm';
     f.referrerPolicy = 'no-referrer-when-downgrade';
-    f.src = 'https://www.google.com/maps?q=' + encodeURIComponent(L.mapQuery) + '&output=embed';
+       f.src = 'https://www.google.com/maps?q=' + encodeURIComponent(L.mapQuery) + '&t=k&z=19&output=embed';
     mapWrap.appendChild(f);
   } else {
     mapWrap.classList.add('map-empty');

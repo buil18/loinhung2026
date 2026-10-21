@@ -6,7 +6,7 @@ window.WEDDING_CONFIG = {
 
   /* 1. Link Google Apps Script (Web app) — nơi nhận RSVP và trả lời chúc.
         Xem backend/README.md để triển khai. */
-  apiUrl: "https://script.google.com/macros/s/AKfycbzJPhBvcm_tHePe3tY_QphEudCgpiezTFg_OrnQtBFPZ9nSdYyRl5ejW45Gq3QqS8PT/exec",
+  apiUrl: "https://script.google.com/macros/s/AKfycbxskzyGDOINFSB9LXcLZ_V7X0mjC08tHeMKKQEMkq3RFK2S69W7OV2Szx5jmJbgC50V/exec",
 
   /* 2. Chú rể / Cô dâu */
   groom: {
@@ -42,11 +42,10 @@ window.WEDDING_CONFIG = {
     address: "Số nhà 26 đường 42 thôn 10 Xã Nam Thành Tỉnh Lâm Đồng",
     mapQuery: "7G9J+5R8 Nam Thành, Lâm Đồng, Việt Nam",                            // ví dụ: "Nhà hàng ABC, 12 Lê Lợi, Quận 1, TP.HCM"
     mapLink: "https://maps.app.goo.gl/Aq9CyPNamcPnHWmN7",                             // (tuỳ chọn) link Google Maps để nút "Chỉ đường" mở đúng
-    note: "Vui lòng đến trước 15 phút để được đón tiếp chu đáo."
   },
 
   /* 6. Album: ảnh đặt trong assets/images/ theo tên gallery-01.jpg, gallery-02.jpg ... */
-  gallery: { count: 15, visible: 6, prefix: "assets/photos/gallery-", ext: ".jpg" },
+  gallery: { count: 12, visible: 6, prefix: "assets/photos/gallery-", ext: ".jpg" },
 
   /* 7. Mừng cưới. qr: ảnh mã QR đặt trong assets/qr/ (xoá dòng qr nếu chưa có) */
   gifts: [
@@ -62,10 +61,11 @@ window.WEDDING_CONFIG = {
   text: {
     inviteLead: "Trân trọng kính mời",
     inviteBody: [
-      "Giữa bao điều bình dị của cuộc sống, chúng mình tìm thấy nhau và cùng quyết định đi tiếp một đời.",
-      "Sự hiện diện của bạn sẽ làm ngày vui của chúng mình thêm trọn vẹn."
+      "Giữa những điều bình dị của cuộc sống, thật may mắn khi hai người tìm thấy nhau và chọn cùng nhau đi hết hành trình phía trước.",
+      "Sẽ thật trọn vẹn nếu ngày vui ấy có sự hiện diện của bạn, cùng sẻ chia những khoảnh khắc hạnh phúc và đáng nhớ."
     ],
-    thanks: "Cảm ơn vì đã luôn yêu thương và đồng hành cùng ngày đặc biệt này.",
+    thanks: "Cảm ơn bạn đã góp mặt trong niềm vui và hạnh phúc của chúng tôi.",
+    footer: "With love"
   },
 
   /* 10. Các lựa chọn trong form RSVP — GIỮ NGUYÊN để khớp với backend/Code.gs */
