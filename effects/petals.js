@@ -4,7 +4,6 @@
 
   var cv = document.getElementById('petals');
   if (!cv || !cv.getContext) return;
-  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   var ctx = cv.getContext('2d');
   var dpr = Math.min(window.devicePixelRatio || 1, 2);
