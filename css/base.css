@@ -39,7 +39,7 @@
   --cover-pos: 50% 25%;   /* ảnh màn mở thiệp */
   --hero-pos: 50% 30%;    /* ảnh khung trắng ở trang bìa */
   --gallery-pos: 50% 30%; /* ảnh trong album */
-  --ending-pos: 50% 40%;  /* ảnh phần cảm ơn */
+  --ending-pos: 50% 25%;  /* ảnh phần cảm ơn */
   --cover-text-align: flex-end;  /* chữ trên màn mở thiệp: flex-end = ở dưới, center = giữa, flex-start = ở trên */
   --cover-wide-pos: 50% 30%;     /* ảnh ngang cover-wide.jpg (chỉ dùng trên máy tính nếu bạn có file này) */
 
