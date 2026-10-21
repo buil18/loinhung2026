@@ -62,7 +62,8 @@
 
 /* ---------- 7. Địa điểm ---------- */
 .loc-name { font-size: 1.1rem; font-weight: 600; }
-.loc-addr { margin-bottom: 20px; font-size: .88rem; color: var(--ink-soft); }
+.loc-name:empty { display: none; }
+  .loc-addr { margin-bottom: 20px; font-size: .88rem; color: var(--ink-soft); white-space: pre-line; }
 .map-wrap { aspect-ratio: 4 / 3; margin-bottom: 18px; overflow: hidden; border-radius: 6px; background: var(--line); }
 .map-wrap iframe { width: 100%; height: 100%; border: 0; }
 .map-empty { display: grid; place-items: center; padding: 20px; font-size: .8rem; color: var(--muted); }
