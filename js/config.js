@@ -54,7 +54,7 @@ window.WEDDING_CONFIG = {
   ],
 
   /* 8. Nhạc nền: đặt file mp3 vào assets/music/. Để src = "" nếu không dùng nhạc. */
-  music: { src: "assets/music/Wedding.mp3" },
+  music: { src: "assets/music/wedding.mp3" },
   autoScroll: { enabled: true, speed: 45, delay: 1600 },
 
   /* 9. Câu chữ */
