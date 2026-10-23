@@ -5,7 +5,8 @@
   var target = W.main.ts.getTime();
   var d = W.$('#cdD'), h = W.$('#cdH'), m = W.$('#cdM'), s = W.$('#cdS');
   var note = W.$('#cdNote');
-  var names = W.C.bride.short + ' & ' + W.C.groom.short;
+  var groomFirst = document.body.getAttribute('data-first') === 'groom';
+  var names = groomFirst ? W.C.groom.short + ' & ' + W.C.bride.short : W.C.bride.short + ' & ' + W.C.groom.short;
 
   function fill(days, hh, mm, ss) {
     d.textContent = days < 100 ? W.pad(days) : String(days);

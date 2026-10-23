@@ -55,7 +55,8 @@
     if (v != null) n.textContent = v;
   });
 
-  document.title = 'Thiệp cưới ' + C.bride.short + ' & ' + C.groom.short;
+  var groomFirst = document.body.getAttribute('data-first') === 'groom';
+  document.title = 'Thiệp cưới ' + (groomFirst ? C.groom.short + ' & ' + C.bride.short : C.bride.short + ' & ' + C.groom.short);
 
   /* Thanh trạng thái trình duyệt điện thoại đổi theo màu nền --bg */
   var tc = document.querySelector('meta[name=theme-color]');
