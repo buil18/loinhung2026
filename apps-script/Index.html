@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base target="_top">
+<title>Kiểm soát đơn từ JDE – SAP</title>
+<style>
+:root{--bg:#f2f2f0;--card:#fff;--line:#d9d9d4;--text:#222;--muted:#666;--accent:#1f4e8c;--ok:#1e6b37;--ok-bg:#e8f2ea;--warn:#8a5a00;--warn-bg:#fbf1dc;--err:#a82525;--err-bg:#f8e6e6;--dark:#3a3d42}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 "Segoe UI",Tahoma,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:16px 16px 40px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:12px;border-bottom:2px solid var(--accent);padding-bottom:8px}
+header h1{margin:0;font-size:20px;font-weight:600}
+.sub{color:var(--muted);font-size:13px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.step{background:var(--card);border:1px solid var(--line);padding:8px 10px;font-size:13px}
+.step .t{font-weight:600}
+.step .d{color:var(--muted);font-size:12.5px}
+kbd{font:12px Consolas,monospace;background:#eee;border:1px solid var(--line);padding:0 4px}
+.paste{position:relative}
+.paste textarea{width:100%;height:70px;resize:none;border:1px dashed #9aa;background:var(--card);color:transparent;caret-color:transparent;cursor:pointer;outline:none}
+.paste textarea:focus{border-color:var(--accent);background:#f3f7fc}
+.paste .hint{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;color:var(--muted);text-align:center}
+.msg{margin-top:10px;padding:8px 12px;font-size:13px;display:none;border-left:4px solid}
+.msg.show{display:block}
+.msg.err{background:var(--err-bg);color:var(--err);border-color:var(--err)}
+.msg.info{background:#e8eef7;color:var(--accent);border-color:var(--accent)}
+#result{display:none;margin-top:14px}
+.card{background:var(--card);border:1px solid var(--line)}
+.verdict{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;margin-bottom:10px;border-left:6px solid;background:var(--card);border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.verdict.ok{border-left-color:var(--ok);background:var(--ok-bg)}
+.verdict.bad{border-left-color:var(--err);background:var(--err-bg)}
+.verdict.stop{border-left-color:var(--dark);background:#e9e9e7}
+.verdict .big{font-size:17px;font-weight:600}
+.verdict.ok .big{color:var(--ok)}.verdict.bad .big{color:var(--err)}
+.verdict .meta{font-size:13px;color:var(--muted)}
+.verdict .right{text-align:right;font-size:13px;color:var(--muted)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{background:var(--card);border:1px solid var(--line);padding:2px 10px;font-size:12.5px}
+.chip b{margin-right:4px}.chip.ok{color:var(--ok)}.chip.err{color:var(--err)}
+.reasons{margin:0;padding:10px 16px 10px 32px;color:var(--err);font-size:13px}
+.notes{margin:0 0 10px;padding:0;list-style:none;font-size:13px}
+.notes li{padding:5px 10px;margin-bottom:3px;background:#e9e9e7;color:var(--muted)}
+.block{margin-bottom:12px}
+.bhead{display:flex;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.bhead .title{font-weight:600;font-size:15px}
+.phase{font-size:12px;font-weight:600;padding:1px 8px;margin-left:8px;border:1px solid}
+.phase.pre{color:var(--warn);background:var(--warn-bg);border-color:#e3c98a}
+.phase.re{color:var(--muted);background:#eee;border-color:var(--line)}
+.bhead .orders{font-size:12.5px;color:var(--muted);margin-top:2px}
+.bhead .orders span{display:inline-block;border:1px solid var(--line);padding:0 6px;margin:2px 4px 0 0;color:var(--text)}
+.pill{padding:2px 12px;font-size:13px;font-weight:600;white-space:nowrap;height:fit-content}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.mismatch{background:var(--err-bg);color:var(--err)}.pill.blocked{background:var(--dark);color:#fff}
+.bstats{display:flex;gap:18px;padding:8px 14px;font-size:12.5px;color:var(--muted);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.bstats b{font-size:15px;color:var(--text);margin-left:4px}
+.bstats .ok b{color:var(--ok)}.bstats .warn b{color:var(--warn)}.bstats .err b{color:var(--err)}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);background:#e6e6e2}
+.seg button{border:0;background:transparent;padding:5px 12px;font:inherit;color:var(--muted);cursor:pointer}
+.seg button.on{background:#fff;color:var(--text);font-weight:600}
+.btns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid #aaa;background:#fff;padding:6px 14px;font:inherit;cursor:pointer;color:var(--text)}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:#173f73;color:#fff}
+.btn[disabled]{opacity:.55;cursor:wait}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:7px 12px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;vertical-align:top}
+th{font-size:12.5px;font-weight:600;color:var(--muted);background:#f6f6f4}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.name{white-space:normal;min-width:200px}td.sku{font-weight:600}
+td .parts{display:block;font-size:11.5px;color:var(--muted);font-weight:400}
+tr:last-child td{border-bottom:0}
+tr.error td.diff{color:var(--err);font-weight:700}tr.warning td.diff{color:var(--warn);font-weight:700}
+.badge{display:inline-block;padding:1px 8px;font-size:12.5px;font-weight:600}
+.badge.ok{background:var(--ok-bg);color:var(--ok)}.badge.warning{background:var(--warn-bg);color:var(--warn)}.badge.error{background:var(--err-bg);color:var(--err)}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:0 5px;margin-left:6px;font-weight:400}
+.empty{padding:16px;text-align:center;color:var(--muted)}
+.flow{margin-bottom:10px;padding:10px 14px}
+.flow .fhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.flow .fsum{font-size:13px;color:var(--muted)}.flow .fsum b{color:var(--text)}
+.frow{display:flex;gap:10px;padding:4px 0;border-top:1px solid #ebebe7;font-size:13px}
+.frow .fs{width:16px;color:var(--ok)}.frow .fn{flex:1}.frow .fn.gap{color:var(--muted);padding-left:12px}
+.frow .fo{width:70px;text-align:right;color:var(--muted);font-size:12.5px}
+.frow .ft{width:120px;white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.frow.wait{color:var(--muted)}
+.fnote{margin-top:6px;font-size:12px;color:var(--muted)}
+
+    .wm { position: fixed; inset: 0; z-index: 9999; pointer-events: none; display: grid; place-items: center; overflow: hidden; user-select: none; }
+    .wm > div { transform: rotate(-22deg); text-align: center; color: #1d2433; opacity: .055; font-weight: 700; line-height: 1.25; white-space: nowrap; }
+    .wm .l1 { font-size: 64px; letter-spacing: 2px; }
+    .wm .l2 { font-size: 26px; letter-spacing: 1px; font-weight: 500; }
+    @media (max-width: 760px) { .wm .l1 { font-size: 34px; } .wm .l2 { font-size: 16px; } }
+    @media print { .wm > div { opacity: .08; } }
+
+.relay{margin-bottom:10px;padding:10px 14px}
+.relay .rhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.relay .rstat{font-size:13px;color:var(--muted)}
+.relay .rstat.ok{color:var(--ok)}.relay .rstat.bad{color:var(--err)}
+.rrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:6px 8px;border-top:1px solid #ebebe7;font-size:13px;cursor:pointer}
+.rrow:hover{background:#f6f6f4}.rrow.on{background:#eef3fa;border-left:3px solid var(--accent)}
+.rrow b{min-width:80px}
+.rp{padding:0 8px;border:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.rp.ok{color:var(--ok);border-color:#b9d6c1;background:var(--ok-bg)}
+.rrow .btn{padding:2px 10px;font-size:12.5px}
+details.setup{margin-bottom:10px;background:var(--card);border:1px solid var(--line);padding:8px 14px;font-size:13px}
+details.setup summary{cursor:pointer;font-weight:600}
+.bmrow{display:flex;gap:10px;align-items:center;padding:6px 0;border-top:1px solid #ebebe7}
+.bmrow .n{width:120px;font-weight:600}.bmrow .d{flex:1;color:var(--muted);font-size:12.5px}
+@media(max-width:760px){.steps{grid-template-columns:1fr}header{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+  <div class="wm" aria-hidden="true"><div><div class="l1">Logistics Hoc Mon</div><div class="l2">Designed by Tien Loi</div></div></div>
+<div class="wrap">
+<header>
+<div><h1>Kiểm tra xuất hàng JDE / glassRUN ↔ SAP</h1>
+<div class="sub">Tool hỗ trợ kiểm tra số lượng đơn SO + Gratis + ST với số đã quét trên SAP</div></div>
+<button class="btn" id="btnReset" onclick="resetAll()" style="display:none">Kiểm tra đơn khác</button>
+</header>
+
+<div class="steps">
+<div class="step"><div class="t">1. glassRUN</div><div class="d">Bật <b>GR Capture</b> một lần đầu ca. Lọc số đơn chính là đơn tự được gửi. Không có JDE thì bấm <b>View Details</b> để dùng dữ liệu glassRUN</div></div>
+<div class="step"><div class="t">2. JDE</div><div class="d">Bật <b>JDE Capture</b> một lần đầu ca. Đơn tự được nhận. Dùng màn hình tìm chung (ô loại đơn để <b>*</b>) thì tự tìm hết SO, S5, S6, ST, không cần chuyển tab. Tìm xong tự gửi</div></div>
+<div class="step"><div class="t">3. SAP</div><div class="d">Bật <b>SAP Fetch</b> một lần đầu ca. Đơn mới tự lấy SAP và gửi. Kết quả hiện ở đây. Hộp thư lỗi thì dùng ô dán bên dưới như cũ</div></div>
+</div>
+
+<div class="card relay" id="relay">
+<div class="rhead"><b>Hộp thư tự động</b><span style="display:flex;gap:10px;align-items:center"><button class="btn" id="btnClearAll" style="display:none;padding:2px 10px;font-size:12.5px" onclick="relayClearAll()">Xóa tất cả</button><span class="rstat" id="relayStat">đang kiểm tra...</span></span></div>
+<div id="relayOrders"><div class="empty" style="padding:8px">Chưa có đơn nào. Lọc đơn trên glassRUN, tìm đơn trên JDE, trang này sẽ tự nhận và đối soát.</div></div>
+</div>
+<details class="setup" id="setup"><summary>Cài bookmark tự động (làm một lần)</summary>
+<div style="margin:8px 0;color:var(--muted)">Tạo 3 bookmark mới, mỗi bookmark bấm "Copy bookmark" rồi dán vào ô URL. Sau đó trên mỗi tab bấm bookmark một lần khi bắt đầu ca, các đơn sau tự chạy. Bookmark cũ (copy/dán) vẫn dùng được nếu hộp thư lỗi.</div>
+<div class="bmrow"><span class="n">GR Capture</span><span class="d">Tab glassRUN: lọc đơn là tự gửi</span><button class="btn" onclick="copyBm('bm-gr',this)">Copy bookmark</button></div>
+<div class="bmrow"><span class="n">JDE Capture</span><span class="d">Tab JDE: tự nhận đơn, tìm xong tự gửi</span><button class="btn" onclick="copyBm('bm-jde',this)">Copy bookmark</button></div>
+<div class="bmrow"><span class="n">SAP Fetch</span><span class="d">Tab SAP: tự lấy SAP của đơn mới</span><button class="btn" onclick="copyBm('bm-sap',this)">Copy bookmark</button></div>
+<div id="bmMsg" class="fnote"></div>
+</details>
+<div class="paste" id="pasteBox"><textarea id="pasteInput" aria-label="Ô dán dữ liệu"></textarea><div class="hint" id="pasteHint"></div></div>
+<div class="msg" id="msg"></div>
+
+<div class="card flow" id="flow" style="display:none"></div>
+
+<section id="result">
+<div class="verdict" id="verdict"></div>
+<div class="tabs" id="tabs"></div>
+<div class="toolbar">
+<div class="seg" id="filter"><button class="on" data-f="all">Tất cả mã</button><button data-f="issue">Chỉ mã lệch</button></div>
+<div class="btns">
+<button class="btn primary" id="btnRerun" onclick="rerun()">Kiểm tra lại</button>
+<button class="btn" id="btnCopy" onclick="copyTable()">Copy kết quả (Excel/Zalo)</button>
+</div>
+</div>
+<div id="blocks"></div>
+<ul class="notes" id="notes"></ul>
+</section>
+</div>
+
+<script type="text/plain" id="bm-gr">
+(function () {
+  if (window.__grCapture) {
+    window.__grCapture.stop();
+    return;
+  }
+  var PALLET_SKUS = ["10079799"];
+  var flowStart = Date.now();
+  var copies = 0;
+  var curMain = "";
+  var latest = [];
+  var group = {};
+  var details = {};
+  var origSend = XMLHttpRequest.prototype.send;
+  var origFetch = window.fetch;
+  var watchTimer = null;
+  window.__grCapture = {
+    stop: function () {
+      clearInterval(watchTimer);
+      XMLHttpRequest.prototype.send = origSend;
+      if (origFetch) window.fetch = origFetch;
+      var box = document.getElementById("__grCaptureBox");
+      if (box) box.remove();
+      delete window.__grCapture;
+    },
+  };
+  var RELAY = { url: "__URL__", key: "__KEY__" };
+  var rs = "đang kiểm tra...";
+  var sentSig = {};
+  function hhmmss() {
+    return new Date().toLocaleTimeString("vi-VN");
+  }
+  function rGet(params) {
+    return origFetch
+      .call(
+        window,
+        RELAY.url + "?k=" + encodeURIComponent(RELAY.key) + "&" + params,
+      )
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j || !j.ok) throw new Error("key");
+        return j;
+      });
+  }
+  function rPut(order, part, data) {
+    var body = JSON.stringify({
+      k: RELAY.key,
+      op: "put",
+      order: order,
+      part: part,
+      data: data,
+    });
+    return origFetch
+      .call(window, RELAY.url, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: body,
+      })
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j || !j.ok) throw new Error("key");
+        return j;
+      })
+      .catch(function (e) {
+        if (e && e.message === "key") throw e;
+        return origFetch
+          .call(window, RELAY.url, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: body,
+          })
+          .then(function () {
+            return { ok: true };
+          });
+      });
+  }
+  function flowOf() {
+    return {
+      start: flowStart,
+      copies: 0,
+      pastes: 0,
+      marks: [
+        { k: "gr_start", at: flowStart },
+        { k: "gr_copy", at: Date.now() },
+      ],
+    };
+  }
+  function autoSend() {
+    if (latest.length !== 1) return;
+    var main = latest[0].main;
+    var gifts = latest[0].gifts;
+    var links = {};
+    links[main] = gifts;
+    var sig = JSON.stringify(links);
+    if (sentSig[main + "|gr"] !== sig) {
+      sentSig[main + "|gr"] = sig;
+      rPut(main, "gr", {
+        kind: "glassRunLinks",
+        links: links,
+        capturedAt: new Date().toISOString(),
+        flow: flowOf(),
+      })
+        .then(function () {
+          rs = "✔ đã gửi đơn " + main + " lúc " + hhmmss();
+          render();
+        })
+        .catch(function () {
+          sentSig[main + "|gr"] = "";
+          rs = "✗ gửi lỗi, dùng nút Copy bên dưới";
+          render();
+        });
+    }
+    var det = details[main];
+    if (det) {
+      var gp = buildGrPayload(main, gifts, det);
+      var sig2 = JSON.stringify(gp.orders);
+      if (sentSig[main + "|grdata"] !== sig2) {
+        sentSig[main + "|grdata"] = sig2;
+        gp.flow = flowOf();
+        rPut(main, "grdata", gp)
+          .then(function () {
+            rs = "✔ đã gửi dữ liệu glassRUN đơn " + main + " lúc " + hhmmss();
+            render();
+          })
+          .catch(function () {
+            sentSig[main + "|grdata"] = "";
+          });
+      }
+    }
+  }
+  function legacyCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+  }
+  function copy(links, btn) {
+    copyData(
+      {
+        kind: "glassRunLinks",
+        links: links,
+        capturedAt: new Date().toISOString(),
+      },
+      btn,
+    );
+  }
+  function buildGrPayload(main, gifts, det) {
+    var orders = {};
+    var links = {};
+    orders[main] = {
+      OrderNumber: main,
+      OrderType: det.OrderType || "SO",
+      IsGift: false,
+      lines: [],
+    };
+    gifts.forEach(function (g) {
+      orders[g] = {
+        OrderNumber: g,
+        OrderType: "Tặng",
+        IsGift: true,
+        lines: [],
+      };
+    });
+    (det.OrderProductList || []).forEach(function (p, i) {
+      if (p.IsActive === false) return;
+      var assoc = String(p.AssociatedOrderNumber || "").trim();
+      var target = /^\d+$/.test(assoc) && assoc !== main ? assoc : main;
+      if (!orders[target])
+        orders[target] = {
+          OrderNumber: target,
+          OrderType: "Tặng",
+          IsGift: true,
+          lines: [],
+        };
+      var code = String(p.ProductCode || "").trim();
+      var qty = Number(p.ProductQuantity) || 0;
+      if (p.IsPackingItem === true || p.ProductType === "9")
+        qty = Number(p.ShippableQuantity) || qty;
+      var isPallet =
+        PALLET_SKUS.indexOf(code.replace(/^0+/, "")) >= 0 ||
+        /pallet/i.test(p.ProductName || "");
+      orders[target].lines.push({
+        OrderNumber: target,
+        LineNumber: String(p.LineNumber || p.OrderProductId || i),
+        ProductCode: code,
+        ProductName: p.ProductName || "",
+        Qty: qty,
+        UOM: p.UOM || "",
+        LineType: p.IsPackingItem === true ? (isPallet ? "RP" : "DP") : "S",
+        LastStatus: "",
+        NextStatus: "",
+        UnitPrice: Number(p.UnitPrice) || 0,
+        ShipTo: det.ShipToCode || "",
+        Carrier: det.CarrierCode || "",
+        SoldToName: det.SoldToName || "",
+        PO: det.PurchaseOrderNumber || "",
+      });
+    });
+    links[main] = Object.keys(orders).filter(function (k) {
+      return k !== main;
+    });
+    var orderSearch = {};
+    Object.keys(orders).forEach(function (k) {
+      orderSearch[k] = {
+        resolved: true,
+        found: orders[k].lines.length > 0,
+        tab: "glassRUN",
+      };
+    });
+    return {
+      kind: "jde",
+      mode: "order",
+      source: "glassRUN",
+      po: det.PurchaseOrderNumber || "",
+      status: det.Status || "",
+      capturedAt: new Date().toISOString(),
+      links: links,
+      orderSearch: orderSearch,
+      tabs: {},
+      layoutErrors: [],
+      orders: Object.keys(orders)
+        .map(function (k) {
+          return orders[k];
+        })
+        .filter(function (o) {
+          return o.lines.length;
+        }),
+    };
+  }
+  function copyData(obj, btn) {
+    copies += 1;
+    obj.flow = {
+      start: flowStart,
+      copies: copies,
+      pastes: 0,
+      marks: [
+        { k: "gr_start", at: flowStart },
+        { k: "gr_copy", at: Date.now() },
+      ],
+    };
+    var data = JSON.stringify(obj);
+    var done = function () {
+      btn.textContent = "Đã copy ✔";
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(data)
+        .then(done)
+        .catch(function () {
+          legacyCopy(data);
+          done();
+        });
+    } else {
+      legacyCopy(data);
+      done();
+    }
+  }
+  function button(label, primary, onClick) {
+    var b = document.createElement("button");
+    b.textContent = label;
+    b.style.cssText =
+      "margin-top:8px;width:100%;padding:8px 12px;border-radius:8px;font-weight:bold;cursor:pointer;" +
+      (primary
+        ? "background:#1a5fd8;color:#fff;border:none"
+        : "background:#fff;color:#1a5fd8;border:1px solid #1a5fd8");
+    b.onclick = function () {
+      onClick(b);
+    };
+    return b;
+  }
+  function giftText(list) {
+    return list.length
+      ? list.join(", ")
+      : '<span style="color:#6b7486">không có đơn tặng</span>';
+  }
+  function render() {
+    var box = document.getElementById("__grCaptureBox");
+    if (!box) {
+      box = document.createElement("div");
+      box.id = "__grCaptureBox";
+      box.style.cssText =
+        "position:fixed;right:16px;bottom:16px;z-index:2147483647;background:#fff;border:1px solid #d5dbe5;border-top:4px solid #1a5fd8;border-radius:10px;padding:12px 14px;font:13px/1.45 Arial,sans-serif;color:#1d2433;box-shadow:0 8px 24px rgba(0,0,0,.18);width:300px";
+      document.body.appendChild(box);
+    }
+    var html =
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="color:#1a5fd8">GR Capture – liên kết đơn tặng</b>' +
+      '<span id="__grClose" title="Tắt GR Capture" style="cursor:pointer;color:#6b7486;font-size:16px;padding:0 4px">✕</span></div>';
+    html +=
+      '<div style="color:#6b7486;font-size:11px;margin-bottom:6px">Hộp thư: ' +
+      rs +
+      "</div>";
+    if (seenFilter) {
+      html +=
+        '<div style="color:#6b7486;font-size:11px;margin-bottom:4px">Ô lọc đang đọc được: <b>' +
+        seenFilter +
+        "</b></div>";
+    }
+    if (!latest.length) {
+      html +=
+        '<div style="color:#6b7486">Lọc cột <b>Số đơn hàng</b> theo số đơn chính cần lấy.</div>';
+    } else if (latest.length > 1) {
+      html +=
+        '<div style="color:#a15c00">Đang hiển thị ' +
+        latest.length +
+        " đơn. Hãy lọc theo đúng 1 số đơn chính để copy.</div>";
+    } else {
+      html +=
+        '<div style="padding:4px 0"><b>' +
+        latest[0].main +
+        "</b>" +
+        (isStNo(latest[0].main)
+          ? ' <span style="color:#a15c00">· đơn ST, chuyển sang JDE để kiểm tra</span>'
+          : " → " + giftText(latest[0].gifts)) +
+        "</div>";
+    }
+    var keys = Object.keys(group);
+    if (keys.length) {
+      html +=
+        '<div style="margin-top:8px;padding-top:6px;border-top:1px solid #eef1f5;color:#6b7486">Nhóm (' +
+        keys.length +
+        " đơn chính):</div>";
+      keys.forEach(function (k) {
+        html += "<div><b>" + k + "</b> → " + giftText(group[k]) + "</div>";
+      });
+    }
+    box.innerHTML = html;
+    box.querySelector("#__grClose").onclick = function () {
+      window.__grCapture.stop();
+    };
+    if (latest.length === 1) {
+      var one = {};
+      one[latest[0].main] = latest[0].gifts;
+      box.appendChild(
+        button("Copy đơn " + latest[0].main + " (cho JDE)", true, function (b) {
+          copy(one, b);
+        }),
+      );
+      var det = details[latest[0].main];
+      if (det) {
+        var gp = buildGrPayload(latest[0].main, latest[0].gifts, det);
+        var lineCount = gp.orders.reduce(function (n, o) {
+          return n + o.lines.length;
+        }, 0);
+        box.appendChild(
+          button(
+            "Copy dữ liệu glassRUN (" + lineCount + " dòng, không qua JDE)",
+            false,
+            function (b) {
+              copyData(gp, b);
+            },
+          ),
+        );
+      } else {
+        var hint = document.createElement("div");
+        hint.style.cssText = "color:#6b7486;font-size:12px;margin-top:6px";
+        hint.textContent =
+          'Không có JDE? Bấm "View Details" của đơn này để lấy dữ liệu glassRUN.';
+        box.appendChild(hint);
+      }
+      if (!group[latest[0].main]) {
+        box.appendChild(
+          button(
+            "+ Thêm vào nhóm (khi PO có nhiều đơn chính)",
+            false,
+            function () {
+              group[latest[0].main] = latest[0].gifts;
+              render();
+            },
+          ),
+        );
+      }
+    }
+    if (keys.length) {
+      box.appendChild(
+        button("Copy nhóm (" + keys.length + " đơn chính)", true, function (b) {
+          copy(group, b);
+        }),
+      );
+      box.appendChild(
+        button("Xóa nhóm", false, function () {
+          group = {};
+          render();
+        }),
+      );
+    }
+  }
+  function isStNo(no) {
+    return /^\d{4}/.test(no) && Number(String(no).slice(0, 4)) < 6221;
+  }
+  function inspect(text) {
+    if (
+      !text ||
+      typeof text !== "string" ||
+      (text.indexOf("AssociatedOrder") < 0 && text.indexOf('"OrderNumber"') < 0)
+    )
+      return;
+    try {
+      var d = JSON.parse(text);
+      if (!Array.isArray(d)) d = [d];
+      var det = d.filter(function (o) {
+        return (
+          o && o.OrderNumber && o.OrderProductList && o.OrderProductList.length
+        );
+      });
+      if (det.length === 1) {
+        details[String(det[0].OrderNumber).trim()] = det[0];
+        render();
+        autoSend();
+        return;
+      }
+      var rows = d.filter(function (o) {
+        return (
+          o &&
+          o.OrderNumber &&
+          ("AssociatedOrder" in o || isStNo(String(o.OrderNumber).trim())) &&
+          !(o.OrderProductList && o.OrderProductList.length)
+        );
+      });
+      if (!rows.length && d.length) return;
+      sentSig = {};
+      latest = rows.map(function (o) {
+        return {
+          main: String(o.OrderNumber).trim(),
+          gifts: String(o.AssociatedOrder || "")
+            .split("-")
+            .map(function (s) {
+              return s.trim();
+            })
+            .filter(function (s) {
+              return /^\d+$/.test(s);
+            }),
+        };
+      });
+      var one = latest.length === 1 ? latest[0].main : "";
+      if (one && one !== curMain && !Object.keys(group).length) {
+        curMain = one;
+        flowStart = Date.now();
+        copies = 0;
+      }
+      render();
+      autoSend();
+    } catch (e) {}
+  }
+  XMLHttpRequest.prototype.send = function () {
+    this.addEventListener("load", function () {
+      try {
+        if (this.responseType === "" || this.responseType === "text")
+          inspect(this.responseText);
+        else if (this.responseType === "json")
+          inspect(JSON.stringify(this.response));
+      } catch (e) {}
+    });
+    return origSend.apply(this, arguments);
+  };
+  if (origFetch) {
+    window.fetch = function () {
+      return origFetch.apply(this, arguments).then(function (r) {
+        try {
+          r.clone()
+            .text()
+            .then(inspect)
+            .catch(function () {});
+        } catch (e) {}
+        return r;
+      });
+    };
+  }
+  var seenFilter = "";
+  function orderHeader() {
+    var nodes = document.querySelectorAll("body *");
+    var best = null;
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i];
+      if (n.children.length) continue;
+      if (
+        (n.textContent || "").replace(/\s+/g, " ").trim().toLowerCase() !==
+        "order number"
+      )
+        continue;
+      var r = n.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      if (!best || r.top < best.top) best = r;
+    }
+    return best;
+  }
+  function readOrderFilter() {
+    var hr = orderHeader();
+    if (!hr) return "";
+    var box = document.getElementById("__grCaptureBox");
+    var inputs = document.querySelectorAll("input");
+    var pick = null;
+    var pickTop = 1e9;
+    var mid = 0;
+    for (var i = 0; i < inputs.length; i++) {
+      var el = inputs[i];
+      if (box && box.contains(el)) continue;
+      if (el.type === "hidden" || el.type === "checkbox") continue;
+      var r = el.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      mid = r.left + r.width / 2;
+      if (mid < hr.left - 20 || mid > hr.right + 20) continue;
+      if (r.top < hr.bottom - 4 || r.top - hr.bottom > 120) continue;
+      if (r.top < pickTop) {
+        pickTop = r.top;
+        pick = el;
+      }
+    }
+    if (!pick) return "";
+    var v = (pick.value || "").trim();
+    return /^\d{8}$/.test(v) ? v : "";
+  }
+  function watchFilter() {
+    var v = readOrderFilter();
+    if (v !== seenFilter) {
+      seenFilter = v;
+      render();
+    }
+    if (!v || !isStNo(v)) return;
+    if (latest.length === 1 && latest[0].main === v) return;
+    latest = [{ main: v, gifts: [] }];
+    if (v !== curMain && !Object.keys(group).length) {
+      curMain = v;
+      flowStart = Date.now();
+      copies = 0;
+    }
+    sentSig = {};
+    render();
+    autoSend();
+  }
+  watchTimer = setInterval(watchFilter, 700);
+  render();
+  rGet("op=ping")
+    .then(function () {
+      rs = "✔ đã kết nối hộp thư";
+      render();
+      autoSend();
+    })
+    .catch(function () {
+      rs = "✗ không kết nối được hộp thư, dùng nút Copy bên dưới";
+      render();
+    });
+})();
+</script>
+<script type="text/plain" id="bm-jde">
+(function () { try {
+if (window.__jdeCapture) { window.__jdeCapture.stop(); return; }
+var hooked = [];
+var timer = null;
+var rtimer = null;
+var atimer = null;
+window.__jdeCapture = {
+stop: function () {
+clearInterval(timer);
+clearInterval(rtimer);
+clearInterval(atimer);
+hooked.forEach(function (h) { try { h.proto.send = h.send; delete h.proto.__jdeHooked; } catch (e) {} });
+var box = document.getElementById('__jdeCaptureBox');
+if (box) box.remove();
+delete window.__jdeCapture;
+}
+};
+var COL = { order: 2, type: 3, line: 5, soldToName: 11, desc: 12, item: 13, qty: 14, uom: 15, requestDate: 20, shipTo: 22, lastStatus: 27, nextStatus: 28, po: 30, shipment: 35, unitPrice: 40 };
+var CARRIER_OFFSET = 24;
+var TABS = ['SO', 'S5', 'S6'];
+var ORDER_TABS = ['SO', 'S5', 'S6', 'ST'];
+var curTab = '';
+function isStNo(no) { return /^\d{4}/.test(no) && Number(String(no).slice(0, 4)) < 6221; }
+function tabsFor(no) { return isStNo(no) ? ['ST'] : TABS; }
+var store = {};
+var orderStore = {};
+var links = null;
+var mode = 'po';
+var lastPo = '';
+var warn = '';
+var lastSearch = '';
+var lastRead = '';
+var flow = { start: Date.now(), copies: 0, pastes: 0, marks: [{ k: 'jde_open', at: Date.now() }] };
+function withFlow(obj) {
+var f = { start: flow.start, copies: flow.copies + 1, pastes: flow.pastes, marks: flow.marks.concat([{ k: 'jde_copy', at: Date.now() }]) };
+flow = f;
+obj.flow = f;
+return obj;
+}
+function num(s) { return Number(String(s || '').replace(/,/g, '').trim()) || 0; }
+function txt(s) { return String(s == null ? '' : s).trim(); }
+function unescapeVal(s) { return s.replace(/\\(.)/g, function (m, c) { return c === 't' ? '\t' : c === 'n' ? '\n' : c; }); }
+function parseEvts(text) {
+var out = { reset: /EVT:226,FIRSTROW:0[,}]/.test(text), rows: [], complete: false, layoutErrors: [] };
+var re = /\{VAL:"((?:[^"\\]|\\.)*)",EVT:203,/g;
+var m;
+while ((m = re.exec(text))) {
+var cols = unescapeVal(m[1]).split('\t');
+if (cols[1] === 'sigma.gif') { out.complete = true; continue; }
+if (cols[1] !== 'blank.gif') continue;
+var b = -1;
+for (var i = COL.unitPrice; i < cols.length; i++) { if (/^\s+\d{4,}$/.test(cols[i])) { b = i; break; } }
+var r = {
+OrderNumber: txt(cols[COL.order]),
+OrderType: txt(cols[COL.type]),
+LineNumber: txt(cols[COL.line]),
+SoldToName: txt(cols[COL.soldToName]),
+ProductName: txt(cols[COL.desc]),
+ProductCode: txt(cols[COL.item]),
+Qty: num(cols[COL.qty]),
+UOM: txt(cols[COL.uom]),
+RequestDate: txt(cols[COL.requestDate]),
+ShipTo: txt(cols[COL.shipTo]),
+LastStatus: txt(cols[COL.lastStatus]),
+NextStatus: txt(cols[COL.nextStatus]),
+PO: txt(cols[COL.po]),
+Shipment: txt(cols[COL.shipment]),
+UnitPrice: num(cols[COL.unitPrice]),
+LineType: b >= 0 ? txt(cols[b + 1]) : '',
+Carrier: b >= 0 ? txt(cols[b + CARRIER_OFFSET]) : ''
+};
+var bad = [];
+if (!/^\d{6,}$/.test(r.OrderNumber)) bad.push('Order Number');
+if (!/^[A-Z0-9]{2}$/.test(r.OrderType)) bad.push('Or Ty');
+if (!/^\d+$/.test(r.ProductCode)) bad.push('2nd Item Number');
+if (!/^[\d,]*\.\d+$|^\d+$/.test(txt(cols[COL.qty]))) bad.push('Quantity');
+if (!/^[A-Z]{2,3}$/.test(r.UOM)) bad.push('UOM');
+if (!/^\d{3}$/.test(r.NextStatus)) bad.push('Next Status');
+if (!r.LineType) bad.push('Line Type');
+if (!/^\d+$/.test(r.Carrier)) bad.push('Carrier');
+if (bad.length) out.layoutErrors.push('Dòng ' + r.LineNumber + ' đơn ' + r.OrderNumber + ': không đọc được ' + bad.join(', ') + '. Bố cục lưới JDE khác mẫu.');
+out.rows.push(r);
+}
+return out;
+}
+function docsOf(win) {
+var list = [];
+function walk(w) {
+try { if (w.document) list.push(w.document); } catch (e) { return; }
+try { for (var i = 0; i < w.frames.length; i++) walk(w.frames[i]); } catch (e) {}
+}
+try { list.push(win.document); } catch (e) {}
+walk(window);
+return list;
+}
+function readByTitle(doc, title) {
+var inputs = doc.querySelectorAll('input');
+var found = null;
+for (var i = 0; i < inputs.length; i++) {
+if (txt(inputs[i].getAttribute('title')) !== title) continue;
+if (/^C0_/.test(inputs[i].id || '')) return txt(inputs[i].value);
+if (found === null) found = txt(inputs[i].value);
+}
+return found;
+}
+function readScreen(win, rows) {
+var info = { tab: '', po: null, orderNo: null, orderType: '' };
+var TAB_RE = /\(\s*(SO|S5|S6|ST)\s*\)[^\n]{0,15}Customer Service Inquiry/i;
+docsOf(win).some(function (doc) {
+try {
+var orderNo = readByTitle(doc, 'Order Number');
+var po = readByTitle(doc, 'Customer PO');
+if (orderNo === null && po === null) return false;
+var ot = readByTitle(doc, 'Order Type');
+var bodyText = doc.body ? (doc.body.innerText || doc.body.textContent || '') : '';
+var mt = bodyText.match(TAB_RE) || String(doc.title || '').match(TAB_RE);
+if (ot) info.orderType = ot.toUpperCase();
+if (ot && /^(SO|S5|S6|ST)$/i.test(ot)) info.tab = ot.toUpperCase();
+else if (ot === '*') info.tab = 'ALL';
+else if (mt) info.tab = mt[1].toUpperCase();
+if (orderNo !== null) info.orderNo = orderNo.replace(/\*/g, '');
+if (po !== null) info.po = po.replace(/\*/g, '');
+return true;
+} catch (e) { return false; }
+});
+if (!info.tab && rows.length) {
+var types = Array.from(new Set(rows.map(function (r) { return r.OrderType; })));
+if (types.length === 1 && ORDER_TABS.indexOf(types[0]) >= 0) info.tab = types[0];
+}
+return info;
+}
+function waitText(st) { return curTab === 'ALL' ? '→ chưa tìm' : '→ tìm ở tab ' + st.next; }
+function show(v) { return v === null ? '(không thấy ô)' : v === '' ? '(trống)' : v; }
+function reject(msg) { warn = msg + ' Lần tìm này không được ghi nhận.'; render(); }
+function onResponse(text, win) {
+if (!text || typeof text !== 'string' || text.indexOf('EVTS') < 0 || text.indexOf('EVT:203') < 0) return;
+var parsed = parseEvts(text);
+if (!parsed.rows.length && !parsed.complete) return;
+var screen = readScreen(win, parsed.rows);
+lastRead = 'Đọc từ form: Order Number = ' + show(screen.orderNo) + ' · Customer PO = ' + show(screen.po) + ' · Order Type = ' + (screen.orderType || '?');
+if (!screen.po && !screen.orderNo && parsed.rows.length) {
+var nos = Array.from(new Set(parsed.rows.map(function (r) { return r.OrderNumber; })));
+if (nos.length === 1 && links && expectedOrders().indexOf(nos[0]) >= 0) {
+screen.orderNo = nos[0];
+lastRead += ' · số đơn lấy từ bảng: ' + nos[0];
+}
+}
+lastSearch = 'Tab ' + (screen.tab || '?') + ' · ' + (screen.po ? 'PO ' + screen.po : screen.orderNo ? 'đơn ' + screen.orderNo : 'không có điều kiện') + ' · ' + (parsed.rows.length ? parsed.rows.length + ' dòng' : 'không có dòng') + (parsed.complete ? '' : ' (chưa tải hết)') + ' · ' + new Date().toLocaleTimeString('vi-VN');
+if (!screen.tab) return reject('Không nhận ra tab JDE (SO/S5/S6/ST) trên màn hình.');
+curTab = screen.tab;
+if (screen.tab === 'ALL' && screen.po) return reject('Màn hình tìm chung chỉ dùng để tìm theo mã đơn, không tìm theo Customer PO.');
+if (screen.po === null) return reject('Không đọc được ô Customer PO trên màn hình.');
+if (screen.orderNo === null) return reject('Không đọc được ô Order Number trên màn hình.');
+sentSig = '';
+var entry = { rows: {}, complete: false, layoutErrors: [], at: new Date().toLocaleTimeString('vi-VN') };
+var fill = function (t) {
+parsed.rows.forEach(function (r) { t.rows[r.OrderNumber + '|' + r.LineNumber] = r; });
+t.layoutErrors = t.layoutErrors.concat(parsed.layoutErrors);
+if (parsed.complete) t.complete = true;
+};
+if (screen.po) {
+if (screen.orderNo) return reject('Tab ' + screen.tab + ': khi tìm theo Customer PO, hãy để trống ô Order Number.');
+if (parsed.rows.some(function (r) { return r.PO !== screen.po; })) return reject('Tab ' + screen.tab + ': có dòng không thuộc PO ' + screen.po + '.');
+warn = '';
+mode = 'po';
+lastPo = screen.po;
+var s = store[screen.po] || (store[screen.po] = { po: screen.po, tabs: {} });
+if (!s.tabs[screen.tab] || parsed.reset) s.tabs[screen.tab] = entry;
+fill(s.tabs[screen.tab]);
+} else if (screen.orderNo) {
+if (parsed.rows.some(function (r) { return r.OrderNumber !== screen.orderNo; })) return reject('Tab ' + screen.tab + ': có dòng không thuộc đơn ' + screen.orderNo + '.');
+warn = '';
+mode = 'order';
+var o = orderStore[screen.orderNo] || (orderStore[screen.orderNo] = { tabs: {} });
+if (!o.tabs[screen.tab] || parsed.reset) o.tabs[screen.tab] = entry;
+fill(o.tabs[screen.tab]);
+} else {
+return reject('Tab ' + screen.tab + ': hãy nhập Order Number (hoặc Customer PO) trước khi tìm.');
+}
+render();
+}
+function collectOrders(entries, orders, tabName) {
+var layoutErrors = [];
+entries.forEach(function (t) {
+layoutErrors = layoutErrors.concat(t.layoutErrors);
+Object.keys(t.rows).forEach(function (k) {
+var r = t.rows[k];
+var o = orders[r.OrderNumber] || (orders[r.OrderNumber] = { OrderNumber: r.OrderNumber, OrderType: r.OrderType, Tab: tabName(t), lines: [] });
+o.lines.push(r);
+});
+});
+return layoutErrors;
+}
+function buildPoPayload(s) {
+var orders = {};
+var tabs = {};
+var entries = [];
+TABS.forEach(function (tab) {
+var t = s.tabs[tab];
+tabs[tab] = { searched: !!t, complete: !!(t && t.complete), lines: t ? Object.keys(t.rows).length : 0 };
+if (t) { t.tab = tab; entries.push(t); }
+});
+var layoutErrors = collectOrders(entries, orders, function (t) { return t.tab; });
+return { kind: 'jde', mode: 'po', po: s.po, capturedAt: new Date().toISOString(), tabs: tabs, layoutErrors: layoutErrors, orders: Object.keys(orders).map(function (k) { return orders[k]; }) };
+}
+function orderState(no) {
+var o = orderStore[no] || { tabs: {} };
+var all = o.tabs.ALL;
+if (all) {
+if (!all.complete) return { resolved: false, found: false, next: 'ALL', loading: true };
+var keys = Object.keys(all.rows);
+if (keys.length) return { resolved: true, found: true, tab: 'ALL', type: all.rows[keys[0]].OrderType };
+return { resolved: true, found: false };
+}
+var seq = tabsFor(no);
+for (var i = 0; i < seq.length; i++) {
+var t = o.tabs[seq[i]];
+if (!t) return { resolved: false, found: false, next: seq[i] };
+if (!t.complete) return { resolved: false, found: false, next: seq[i], loading: true };
+if (Object.keys(t.rows).length) return { resolved: true, found: true, tab: seq[i] };
+}
+return { resolved: true, found: false };
+}
+function expectedOrders() {
+var list = [];
+Object.keys(links || {}).forEach(function (main) {
+[main].concat(links[main]).forEach(function (no) { if (list.indexOf(no) < 0) list.push(no); });
+});
+return list;
+}
+function buildOrderPayload() {
+var orders = {};
+var orderSearch = {};
+var entries = [];
+expectedOrders().forEach(function (no) {
+var st = orderState(no);
+orderSearch[no] = st;
+if (st.found) { var t = orderStore[no].tabs[st.tab]; t.tab = st.type || st.tab; entries.push(t); }
+});
+var layoutErrors = collectOrders(entries, orders, function (t) { return t.tab; });
+return { kind: 'jde', mode: 'order', po: '', capturedAt: new Date().toISOString(), links: links, orderSearch: orderSearch, tabs: {}, layoutErrors: layoutErrors, orders: Object.keys(orders).map(function (k) { return orders[k]; }) };
+}
+var RELAY = { url: '__URL__', key: '__KEY__' };
+var rs = 'đang kiểm tra...';
+var relayOk = false;
+var sentSig = '';
+var newHint = '';
+function hhmmss() { return new Date().toLocaleTimeString('vi-VN'); }
+var transport = '';
+var canRead = false;
+function jsonp(params) {
+return new Promise(function (resolve, reject) {
+var cb = '__rly' + Math.random().toString(36).slice(2);
+var s = document.createElement('script');
+var t = setTimeout(function () { cleanup(); reject(new Error('script: quá thời gian')); }, 8000);
+function cleanup() { clearTimeout(t); try { delete window[cb]; } catch (e) { window[cb] = undefined; } if (s.parentNode) s.parentNode.removeChild(s); }
+window[cb] = function (j) { cleanup(); resolve(j); };
+s.onerror = function () { cleanup(); reject(new Error('script: bị chặn')); };
+s.src = RELAY.url + '?k=' + encodeURIComponent(RELAY.key) + '&' + params + '&callback=' + cb;
+(document.head || document.documentElement).appendChild(s);
+});
+}
+function xhrReq(method, url, body) {
+return new Promise(function (resolve, reject) {
+var x = new XMLHttpRequest();
+x.open(method, url);
+if (body) x.setRequestHeader('Content-Type', 'text/plain;charset=utf-8');
+x.onload = function () { try { resolve(JSON.parse(x.responseText)); } catch (e) { reject(new Error('xhr: phản hồi lạ')); } };
+x.onerror = function () { reject(new Error('xhr: bị chặn')); };
+x.send(body || null);
+});
+}
+function formPost(body) {
+return new Promise(function (resolve) {
+var name = '__rlyf' + Math.random().toString(36).slice(2);
+var f = document.createElement('iframe');
+f.name = name;
+f.style.display = 'none';
+var form = document.createElement('form');
+form.method = 'POST';
+form.action = RELAY.url;
+form.target = name;
+form.style.display = 'none';
+var inp = document.createElement('input');
+inp.type = 'hidden';
+inp.name = 'payload';
+inp.value = body;
+form.appendChild(inp);
+var root = document.body || document.documentElement;
+root.appendChild(f);
+root.appendChild(form);
+form.submit();
+setTimeout(function () { try { form.remove(); f.remove(); } catch (e) {} resolve({ ok: true }); }, 4000);
+});
+}
+function check(j) { if (!j || !j.ok) throw new Error('key'); return j; }
+function rGet(params) {
+var url = RELAY.url + '?k=' + encodeURIComponent(RELAY.key) + '&' + params;
+if (transport === 'xhr') return xhrReq('GET', url).then(check);
+if (transport === 'script') return jsonp(params).then(check);
+return fetch(url).then(function (r) { return r.json(); }).then(check);
+}
+function rPut(order, part, data) {
+var body = JSON.stringify({ k: RELAY.key, op: 'put', order: order, part: part, data: data });
+var t0 = Date.now();
+if (transport === 'xhr') return xhrReq('POST', RELAY.url, body).then(check);
+if (transport === 'form') return formPost(body);
+if (transport === 'script') {
+return formPost(body).then(function () {
+return rGet('op=recent').then(function (r) {
+var o = (r.orders || []).filter(function (x) { return x.order === order; })[0];
+if (!o || !o.parts[part] || o.parts[part].at < t0) throw new Error('chưa lưu được');
+return { ok: true };
+});
+});
+}
+return fetch(RELAY.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: body }).then(function (r) { return r.json(); }).then(check).catch(function (e) {
+if (e && e.message === 'key') throw e;
+return fetch(RELAY.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: body }).then(function () { return { ok: true }; });
+});
+}
+function detectTransport() {
+var errs = [];
+var tries = [
+['fetch', function () { return fetch(RELAY.url + '?k=' + encodeURIComponent(RELAY.key) + '&op=ping').then(function (r) { return r.json(); }).then(check); }],
+['xhr', function () { return xhrReq('GET', RELAY.url + '?k=' + encodeURIComponent(RELAY.key) + '&op=ping').then(check); }],
+['script', function () { return jsonp('op=ping').then(check); }]
+];
+var p = Promise.reject(new Error('start'));
+tries.forEach(function (t) {
+p = p.catch(function () {
+transport = t[0];
+return t[1]().then(function () { return t[0]; }, function (e) { errs.push(t[0] + ': ' + ((e && e.message) || e)); throw e; });
+});
+});
+return p.then(function (name) { canRead = true; return name; }, function () {
+transport = 'form';
+canRead = false;
+return Promise.reject(errs.join(' | '));
+});
+}
+function pullLinks(force) {
+if (!relayOk || !canRead) return;
+rGet('op=recent').then(function (r) {
+var list = (r.orders || []).filter(function (o) { return o.parts && o.parts.gr; });
+if (!list.length) return;
+list.sort(function (x, y) { return y.parts.gr.at - x.parts.gr.at; });
+var o = list[0];
+var current = expectedOrders().indexOf(o.order) >= 0;
+if (links && !force) {
+if (!current) { var changed = newHint !== o.order; newHint = sentSig ? '' : o.order; if (sentSig) { force = true; } else if (changed) render(); }
+if (!force) return;
+}
+return rGet('op=get&order=' + o.order + '&part=gr').then(function (g) {
+if (!g.data || !g.data.links) return;
+links = g.data.links;
+mode = 'order';
+warn = '';
+var gf = g.data.flow;
+flow = { start: gf && gf.start ? gf.start : Date.now(), copies: 0, pastes: 0, marks: (gf && gf.marks ? gf.marks.slice() : []).concat([{ k: 'jde_paste', at: Date.now() }]) };
+sentSig = '';
+newHint = '';
+rs = '✔ đã nhận đơn ' + o.order + ' từ glassRUN lúc ' + hhmmss();
+render();
+});
+}).catch(function () {});
+}
+function autoSend(ok) {
+if (!relayOk || !ok) return;
+var mains = Object.keys(links || {});
+if (mains.length !== 1) return;
+var payload = buildOrderPayload();
+var sig = JSON.stringify([payload.orders, payload.orderSearch]);
+if (sig === sentSig) return;
+sentSig = sig;
+payload.flow = { start: flow.start, copies: 0, pastes: 0, marks: flow.marks.concat([{ k: 'jde_copy', at: Date.now() }]) };
+rPut(mains[0], 'jde', payload).then(function () { rs = '✔ đã gửi dữ liệu JDE đơn ' + mains[0] + ' lúc ' + hhmmss(); render(); }).catch(function () { sentSig = ''; rs = '✗ gửi lỗi, dùng nút Copy bên dưới'; render(); });
+}
+function extra(box) {
+if (!relayOk || !canRead) return;
+addButton(box, newHint ? 'Lấy đơn mới ' + newHint + ' từ glassRUN' : 'Lấy đơn mới nhất từ glassRUN', !!newHint, function () { pullLinks(true); }, !newHint);
+}
+function legacyCopy(text) {
+var ta = document.createElement('textarea');
+ta.value = text;
+document.body.appendChild(ta);
+ta.select();
+document.execCommand('copy');
+ta.remove();
+}
+function applyLinksText(t) {
+try {
+var p = JSON.parse(t);
+if (p.kind !== 'glassRunLinks' || !p.links || !Object.keys(p.links).length) throw new Error();
+links = p.links;
+if (p.flow && p.flow.start) flow = { start: p.flow.start, copies: p.flow.copies || 0, pastes: p.flow.pastes || 0, marks: (p.flow.marks || []).slice() };
+flow.pastes += 1;
+flow.marks.push({ k: 'jde_paste', at: Date.now() });
+mode = 'order';
+warn = '';
+return true;
+} catch (e) { warn = 'Nội dung vừa lấy không phải danh sách đơn từ GR Capture (hãy bấm Copy đơn ở glassRUN trước).'; return false; }
+}
+function pasteLinks() {
+var t = prompt('Dán liên kết đơn tặng vừa copy từ GR Capture (glassRUN) rồi bấm OK:');
+if (!t) return;
+applyLinksText(t);
+render();
+}
+function clipLinks() {
+var go = function (t) { if (applyLinksText(t)) startAuto(); render(); };
+if (navigator.clipboard && navigator.clipboard.readText) {
+navigator.clipboard.readText().then(go).catch(function () { var t = prompt('Không đọc được clipboard. Dán danh sách đơn vừa copy từ GR Capture rồi bấm OK:'); if (t) go(t); });
+} else { var t = prompt('Dán danh sách đơn vừa copy từ GR Capture rồi bấm OK:'); if (t) go(t); }
+}
+var auto = { on: false, cur: '', curTab: '', at: 0, msg: '' };
+function findForm() {
+var docs = docsOf(window);
+for (var i = 0; i < docs.length; i++) {
+try {
+var el = docs[i].getElementById('C0_9');
+if (el && txt(el.getAttribute('title')) === 'Order Number') return { doc: docs[i], el: el };
+} catch (e) {}
+}
+return null;
+}
+function setVal(el, v) {
+var win = el.ownerDocument.defaultView;
+var d = Object.getOwnPropertyDescriptor(win.HTMLInputElement.prototype, 'value');
+el.focus();
+if (d && d.set) d.set.call(el, v); else el.value = v;
+['input', 'change'].forEach(function (n) { el.dispatchEvent(new win.Event(n, { bubbles: true })); });
+el.blur();
+}
+function pressFind(doc) {
+var b = doc.getElementById('hc_Find');
+if (b) { b.click(); return true; }
+try {
+var w = doc.defaultView;
+if (w.JDEDTAFactory) { w.JDEDTAFactory.getInstance('').post('0_28'); return true; }
+} catch (e) {}
+return false;
+}
+function stopAuto(msg) { auto.on = false; auto.cur = ''; auto.msg = msg || ''; render(); }
+function startAuto() {
+if (!links) return;
+auto.on = true;
+auto.cur = '';
+auto.msg = 'Đang chạy tự động...';
+render();
+}
+function autoTick() {
+if (!auto.on || !links) return;
+var f = findForm();
+if (!f) { if (auto.msg.indexOf('Không thấy') !== 0) { auto.msg = 'Không thấy ô Order Number. Mở màn hình Customer Service Inquiry (tab SO, S5, S6, ST hoặc màn hình tìm chung).'; render(); } return; }
+var ot = f.doc.getElementById('C0_13');
+var tab = ot ? txt(ot.value).toUpperCase() : '';
+if (auto.cur) {
+var t = orderStore[auto.cur] && orderStore[auto.cur].tabs[auto.curTab];
+if (t && t.complete) auto.cur = '';
+else if (Date.now() - auto.at > (t ? 10000 : 20000)) return stopAuto(t ? 'Đơn ' + auto.cur + ': lưới chưa tải hết. Cuộn lưới xuống cuối rồi bấm Chạy tự động lại.' : 'Đơn ' + auto.cur + ': JDE không trả kết quả sau 20 giây. Kiểm tra màn hình rồi bấm Chạy tự động lại.');
+else return;
+}
+if (tab === '*' || tab === '') tab = 'ALL';
+curTab = tab;
+if (ORDER_TABS.indexOf(tab) < 0 && tab !== 'ALL') { auto.msg = 'Không nhận ra tab hiện tại (cần SO, S5, S6, ST hoặc ô loại đơn là *).'; render(); return; }
+var list = expectedOrders();
+var pick = '';
+var needTab = '';
+for (var i = 0; i < list.length; i++) {
+var st = orderState(list[i]);
+if (st.resolved) continue;
+if (tab === 'ALL' || st.next === tab) { pick = list[i]; break; }
+if (!needTab) needTab = st.next;
+}
+if (!pick) {
+if (needTab) { var m = 'Xong tab ' + tab + '. Chuyển sang tab ' + needTab + ' để chạy tiếp.'; if (auto.msg !== m) { auto.msg = m; render(); } return; }
+return stopAuto('Đã tìm xong tất cả các đơn.');
+}
+var po = f.doc.getElementById('C0_19');
+if (po && txt(po.value) !== '' && txt(po.value) !== '*') setVal(po, '*');
+setVal(f.el, pick);
+auto.cur = pick;
+auto.curTab = tab;
+auto.at = Date.now();
+auto.msg = 'Đang tìm đơn ' + pick + (tab === 'ALL' ? ' trên màn hình tìm chung...' : ' ở tab ' + tab + '...');
+setTimeout(function () { if (!pressFind(f.doc)) stopAuto('Không bấm được nút Find. Bạn bấm Find bằng tay.'); else render(); }, 250);
+}
+function autoButtons(box, done) {
+if (auto.msg) {
+var d = document.createElement('div');
+d.style.cssText = 'margin-top:8px;padding:6px 8px;border-radius:6px;background:#eef3ff;color:#1a3f99;font-size:12px';
+d.textContent = auto.msg;
+box.appendChild(d);
+}
+if (auto.on) addButton(box, 'Dừng tự động', true, function () { stopAuto('Đã dừng.'); }, true);
+else if (!done) addButton(box, 'Chạy tự động (điền mã + Find)', true, startAuto);
+}
+function addButton(box, label, enabled, onClick, secondary) {
+var btn = document.createElement('button');
+btn.textContent = label;
+btn.disabled = !enabled;
+btn.style.cssText = 'margin-top:8px;width:100%;padding:9px 12px;border-radius:8px;font-weight:bold;cursor:' + (enabled ? 'pointer' : 'not-allowed') + ';' + (secondary ? 'background:#fff;color:#1a5fd8;border:1px solid #1a5fd8' : 'border:none;background:' + (enabled ? '#1a5fd8' : '#dfe3ea') + ';color:' + (enabled ? '#fff' : '#6b7486'));
+btn.onclick = onClick;
+box.appendChild(btn);
+return btn;
+}
+function copyButton(box, label, enabled, build) {
+var btn = addButton(box, label, enabled, function () {
+var data = JSON.stringify(withFlow(build()));
+var done = function () { btn.textContent = 'Đã copy ✔ – sang tab SAP'; };
+if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(data).then(done).catch(function () { legacyCopy(data); done(); }); }
+else { legacyCopy(data); done(); }
+});
+}
+var LINE = 'display:flex;gap:8px;padding:3px 0;border-top:1px solid #eef1f5';
+var OK = 'color:#137a3a', BAD = 'color:#c0262d', WAIT = 'color:#a15c00';
+function render() {
+var box = document.getElementById('__jdeCaptureBox');
+if (!box) {
+box = document.createElement('div');
+box.id = '__jdeCaptureBox';
+box.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:2147483647;background:#fff;border:1px solid #d5dbe5;border-top:4px solid #1a5fd8;border-radius:10px;padding:12px 14px;font:13px/1.45 Arial,sans-serif;color:#1d2433;box-shadow:0 8px 24px rgba(0,0,0,.18);width:310px;max-height:70vh;overflow:auto';
+(document.body || document.documentElement).appendChild(box);
+}
+var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="color:#1a5fd8">JDE Capture' + (mode === 'order' ? ' <span style="color:#6b7486;font-weight:600">· theo mã đơn</span>' : '') + '</b>' + '<span id="__jdeClose" title="Tắt JDE Capture" style="cursor:pointer;color:#6b7486;font-size:16px;padding:0 4px">✕</span></div>';
+if (warn) html += '<div style="background:#fdecec;color:#c0262d;padding:6px 8px;border-radius:6px;margin-bottom:8px">' + warn + '</div>';
+html += '<div style="color:#6b7486;font-size:11px;margin-bottom:6px">Hộp thư: ' + rs + '</div>';
+html += '<div style="color:#6b7486;font-size:11px;margin-bottom:6px">Lần tìm gần nhất: ' + (lastSearch || 'chưa nhận được lần tìm nào từ JDE') + '</div>';
+if (lastRead) html += '<div style="color:#6b7486;font-size:11px;margin-bottom:6px">' + lastRead + '</div>';
+if (mode === 'order' && !links) {
+var searched = Object.keys(orderStore);
+html += '<div style="color:#a15c00;margin-bottom:4px">Chưa có danh sách đơn. Bấm <b>Lấy danh sách từ clipboard và chạy</b> (sau khi Copy đơn ở glassRUN). Các lần tìm đã làm vẫn được giữ lại.</div>';
+searched.forEach(function (no) {
+var st = orderState(no);
+html += '<div style="' + LINE + '"><b style="width:74px">' + no + '</b>' + (st.found ? '<span style="' + OK + '">✔ ' + (st.type || st.tab) + '</span>' : st.resolved ? '<span style="' + BAD + '">✗ không tìm thấy</span>' : '<span style="' + WAIT + '">' + waitText(st) + '</span>') + '</div>';
+});
+box.innerHTML = html;
+addButton(box, 'Lấy danh sách từ clipboard và chạy', true, clipLinks);
+addButton(box, 'Dán danh sách đơn (nhập tay)', true, pasteLinks, true);
+autoButtons(box, true);
+extra(box);
+bindClose(box);
+return;
+}
+if (mode === 'order') {
+var exp = expectedOrders();
+var p2 = buildOrderPayload();
+exp.forEach(function (no) {
+var st = p2.orderSearch[no];
+var isMain = links.hasOwnProperty(no);
+var state = st.found ? '<span style="' + OK + '">✔ ' + (st.type || st.tab) + '</span>' : st.resolved ? '<span style="' + BAD + '">✗ không tìm thấy (đã tìm SO, S5, S6, ST)</span>' : st.loading ? '<span style="' + WAIT + '">⏳ ' + st.next + ': lưới chưa tải hết</span>' : '<span style="' + WAIT + '">' + waitText(st) + '</span>';
+html += '<div style="' + LINE + '"><b style="width:74px">' + no + '</b><span style="width:34px;color:#6b7486">' + (isMain ? 'chính' : 'tặng') + '</span>' + state + '</div>';
+});
+if (p2.layoutErrors.length) html += '<div style="background:#fdecec;color:#c0262d;padding:6px 8px;border-radius:6px;margin-top:8px">' + p2.layoutErrors[0] + '</div>';
+box.innerHTML = html;
+var allResolved = exp.every(function (no) { return p2.orderSearch[no].resolved; });
+autoSend(allResolved && !p2.layoutErrors.length);
+autoButtons(box, allResolved);
+copyButton(box, allResolved ? 'Copy dữ liệu tra cứu' : 'Chưa tìm đủ – chưa copy được', allResolved && !p2.layoutErrors.length, buildOrderPayload);
+addButton(box, 'Lấy danh sách mới từ clipboard và chạy', true, clipLinks, true);
+addButton(box, 'Dán danh sách đơn khác', true, pasteLinks, true);
+extra(box);
+bindClose(box);
+return;
+}
+var s = store[lastPo];
+if (!s) {
+html += '<div style="color:#6b7486">Copy đơn ở glassRUN, rồi bấm <b>Lấy danh sách từ clipboard và chạy</b>. Tool tự điền từng mã đơn và bấm Find, bạn chỉ chuyển tab SO → S5 → S6 khi được nhắc.</div>';
+box.innerHTML = html;
+addButton(box, 'Lấy danh sách từ clipboard và chạy', true, clipLinks);
+addButton(box, 'Dán danh sách đơn (nhập tay)', true, pasteLinks, true);
+extra(box);
+bindClose(box);
+return;
+}
+var p = buildPoPayload(s);
+var ready = TABS.every(function (tab) { return p.tabs[tab].searched && p.tabs[tab].complete; }) && !p.layoutErrors.length;
+html += '<div style="margin-bottom:6px">PO <b>' + s.po + '</b></div>';
+TABS.forEach(function (tab) {
+var t = p.tabs[tab];
+var ords = p.orders.filter(function (o) { return o.Tab === tab; }).map(function (o) { return o.OrderNumber; });
+var state = !t.searched ? '<span style="' + BAD + '">✗ chưa tìm</span>' : !t.complete ? '<span style="' + WAIT + '">⏳ lưới chưa tải hết, cuộn xuống cuối</span>' : '<span style="' + OK + '">✔ ' + (ords.length ? ords.join(', ') : 'không có đơn') + '</span>';
+html += '<div style="' + LINE + '"><b style="width:26px">' + tab + '</b>' + state + '</div>';
+});
+if (p.layoutErrors.length) html += '<div style="background:#fdecec;color:#c0262d;padding:6px 8px;border-radius:6px;margin-top:8px">' + p.layoutErrors[0] + '</div>';
+box.innerHTML = html;
+copyButton(box, ready ? 'Copy dữ liệu PO ' + s.po : 'Chưa đủ 3 tab – chưa copy được', ready, function () { return buildPoPayload(store[lastPo]); });
+extra(box);
+bindClose(box);
+}
+function bindClose(box) {
+var x = box.querySelector('#__jdeClose');
+if (x) x.onclick = function () { window.__jdeCapture.stop(); };
+}
+function hook(win) {
+try {
+if (!win.XMLHttpRequest || win.XMLHttpRequest.prototype.__jdeHooked) return;
+var proto = win.XMLHttpRequest.prototype;
+var origSend = proto.send;
+proto.send = function () {
+this.addEventListener('load', function () {
+try { if (this.responseType === '' || this.responseType === 'text') onResponse(this.responseText, win); } catch (e) {}
+});
+return origSend.apply(this, arguments);
+};
+proto.__jdeHooked = true;
+hooked.push({ proto: proto, send: origSend });
+} catch (e) {}
+}
+function hookAll(win) {
+hook(win);
+try { for (var i = 0; i < win.frames.length; i++) hookAll(win.frames[i]); } catch (e) {}
+}
+detectTransport().then(function (name) { relayOk = true; rs = '✔ đã kết nối hộp thư (' + name + ')'; pullLinks(false); render(); rtimer = setInterval(function () { pullLinks(false); }, 5000); }, function (errs) { relayOk = true; rs = '⚠ trang JDE chặn nhận dữ liệu (' + errs + '). Dán danh sách đơn như cũ, dữ liệu JDE vẫn tự gửi đi (chưa kiểm chứng).'; render(); });
+hookAll(window);
+timer = setInterval(function () { hookAll(window); }, 1000);
+atimer = setInterval(autoTick, 800);
+render();
+} catch (e) { alert('JDE Capture lỗi: ' + (e && e.message)); } })();
+</script>
+<script type="text/plain" id="bm-sap">
+(function () {
+if (window.__sapAgent) { window.__sapAgent.stop(); return; }
+var RELAY = { url: '__URL__', key: '__KEY__' };
+function legacy() { var sapPasteAt = Date.now(); var text = prompt('Dán dữ liệu PO vừa copy từ JDE (Ctrl+V) rồi bấm OK:'); if (!text) return; var jde; try { jde = JSON.parse(text); } catch (e) { alert('Dữ liệu không hợp lệ. Hãy bấm "Copy dữ liệu PO" trên tab JDE rồi thử lại.'); return; } if (!jde || jde.kind !== 'jde' || !Array.isArray(jde.orders)) { alert('Đây không phải dữ liệu từ JDE Capture. Hãy copy lại trên tab JDE.'); return; } var soOrders = jde.orders.filter(function (o) { return o.OrderType === 'SO'; }).map(function (o) { return String(o.OrderNumber).trim(); }); var filter = soOrders.map(function (no) { return "SalesOrder eq '" + no + "'"; }).join(' or '); var sapUrl = '/sap/opu/odata/sap/ZUI_WM_TRUCK_TRACE_O2/ZWM_I_TRACK_TRACE?$format=json&$filter=(' + filter + ')'; (soOrders.length ? fetch(sapUrl, { method: 'GET', headers: { 'Accept': 'application/json' }, credentials: 'same-origin' }) .then(function (r) { if (!r.ok) throw new Error('SAP trả về lỗi ' + r.status + '. Hãy đảm bảo đang đứng ở tab SAP và đã đăng nhập.'); return r.json(); }) : Promise.resolve({ d: { results: [] } })) .then(function (j) { var rows = (j.d && j.d.results) ? j.d.results : []; rows = rows.map(function (x) { var c = Object.assign({}, x); delete c.__metadata; return c; }); var sapFetchedAt = Date.now(); var count = {}; rows.forEach(function (r) { var k = String(r.SalesOrder || '').trim(); count[k] = (count[k] || 0) + 1; }); var box = document.getElementById('__sapFetchBox'); if (!box) { box = document.createElement('div'); box.id = '__sapFetchBox'; box.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:2147483647;background:#fff;border:1px solid #d5dbe5;border-top:4px solid #1a5fd8;border-radius:10px;padding:12px 14px;font:13px/1.45 Arial,sans-serif;color:#1d2433;box-shadow:0 8px 24px rgba(0,0,0,.18);width:300px'; document.body.appendChild(box); } var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="color:#1a5fd8">SAP Fetch</b>' + '<span id="__sapClose" title="Đóng" style="cursor:pointer;color:#6b7486;font-size:16px;padding:0 4px">✕</span></div>' + '<div style="margin-bottom:6px">' + (jde.mode === 'order' ? 'Theo mã đơn · nguồn ' + (jde.source || 'JDE') : 'PO <b>' + jde.po + '</b>') + '</div>'; soOrders.forEach(function (no) { html += '<div style="display:flex;justify-content:space-between;padding:3px 0;border-top:1px solid #eef1f5"><span>' + no + '</span>' + (count[no] ? '<span style="color:#137a3a">✔ ' + count[no] + ' dòng SAP</span>' : '<span style="color:#6b7486">không có dòng SAP</span>') + '</div>'; }); if (!soOrders.length) html += '<div style="color:#c0262d">JDE không có đơn SO nào, không lấy được dữ liệu SAP. Web App sẽ báo chi tiết.</div>'; box.innerHTML = html; box.querySelector('#__sapClose').onclick = function () { box.remove(); }; var btn = document.createElement('button'); btn.textContent = 'Copy kết quả SAP'; btn.style.cssText = 'margin-top:10px;width:100%;padding:9px 12px;background:#1a5fd8;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold'; btn.onclick = function () { var jf = jde.flow || null; var flow = jf ? { start: jf.start, copies: (jf.copies || 0) + 1, pastes: (jf.pastes || 0) + 1, marks: (jf.marks || []).concat([{ k: 'sap_paste', at: sapPasteAt }, { k: 'sap_fetched', at: sapFetchedAt }, { k: 'sap_copy', at: Date.now() }]) } : null; var data = JSON.stringify({ kind: 'crosscheck', jde: jde, sap: rows, flow: flow }); var done = function () { btn.textContent = 'Đã copy ✔ – dán vào Web App'; }; if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(data).then(done).catch(function () { legacyCopy(data); done(); }); } else { legacyCopy(data); done(); } }; box.appendChild(btn); }) .catch(function (err) { alert(err.message); }); function legacyCopy(t) { var ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); } }
+function hhmmss() { return new Date().toLocaleTimeString('vi-VN'); }
+function rGet(params) {
+return fetch(RELAY.url + '?k=' + encodeURIComponent(RELAY.key) + '&' + params).then(function (r) { return r.json(); }).then(function (j) { if (!j || !j.ok) throw new Error('key'); return j; });
+}
+function rPut(order, part, data) {
+var body = JSON.stringify({ k: RELAY.key, op: 'put', order: order, part: part, data: data });
+return fetch(RELAY.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: body }).then(function (r) { return r.json(); }).then(function (j) { if (!j || !j.ok) throw new Error('key'); return j; }).catch(function (e) {
+if (e && e.message === 'key') throw e;
+return fetch(RELAY.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: body }).then(function () { return { ok: true }; });
+});
+}
+var done = {};
+var busy = {};
+var tried = {};
+var info = {};
+var order = [];
+var known = {};
+var startAt = Date.now();
+var GRACE = 120000;
+var timer = null;
+window.__sapAgent = {
+stop: function () {
+clearInterval(timer);
+var b = document.getElementById('__sapAgentBox');
+if (b) b.remove();
+delete window.__sapAgent;
+}
+};
+function sapRows(no) {
+var field = /^\d{4}/.test(no) && Number(no.slice(0, 4)) < 6221 ? 'st' : 'SalesOrder';
+var url = '/sap/opu/odata/sap/ZUI_WM_TRUCK_TRACE_O2/ZWM_I_TRACK_TRACE?$format=json&$filter=(' + field + " eq '" + no + "'" + ')';
+return fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' }, credentials: 'same-origin' }).then(function (r) {
+if (!r.ok) throw new Error('SAP trả về lỗi ' + r.status + '. Hãy đảm bảo đang đứng ở tab SAP và đã đăng nhập.');
+return r.json();
+}).then(function (j) {
+var rows = (j.d && j.d.results) ? j.d.results : [];
+return rows.map(function (x) { var c = Object.assign({}, x); delete c.__metadata; return c; });
+});
+}
+function handle(o, force) {
+var gr = o.parts && o.parts.gr;
+if (!gr) return;
+if (busy[o.order]) return;
+if (!force) {
+if (tried[o.order] === gr.at) return;
+if (gr.at < startAt - GRACE) { tried[o.order] = gr.at; info[o.order] = '<span style="color:#6b7486">đơn cũ, không tự lấy</span>'; return; }
+if (o.parts.sap) { tried[o.order] = gr.at; info[o.order] = '<span style="color:#137a3a">✔ đã có SAP trong hộp thư</span>'; return; }
+}
+busy[o.order] = true;
+tried[o.order] = gr.at;
+info[o.order] = '<span style="color:#a15c00">⏳ đang lấy SAP...</span>';
+render();
+sapRows(o.order).then(function (rows) {
+return rPut(o.order, 'sap', { kind: 'sapRows', order: o.order, rows: rows, fetchedAt: Date.now() }).then(function () {
+if (rows.length) { done[o.order] = gr.at; info[o.order] = '<span style="color:#137a3a">✔ ' + rows.length + ' dòng SAP · đã gửi ' + hhmmss() + '</span>'; }
+else info[o.order] = '<span style="color:#a15c00">SAP chưa có dòng nào, đã dừng (bấm lấy lại nếu cần)</span>';
+});
+}).catch(function (e) {
+info[o.order] = '<span style="color:#c0262d">✗ ' + (e && e.message === 'key' ? 'hộp thư từ chối (sai khóa)' : (e && e.message) || 'lỗi') + ' (đã dừng, bấm lấy lại)</span>';
+}).then(function () { busy[o.order] = false; render(); });
+}
+function tick() {
+rGet('op=recent').then(function (r) {
+var list = (r.orders || []).filter(function (o) { return o.parts && o.parts.gr; });
+list.sort(function (x, y) { return y.parts.gr.at - x.parts.gr.at; });
+list = list.slice(0, 5);
+order = list.map(function (o) { return o.order; });
+list.forEach(function (o) { known[o.order] = o; handle(o, false); });
+render();
+}).catch(function () {});
+}
+function render() {
+var box = document.getElementById('__sapAgentBox');
+if (!box) {
+box = document.createElement('div');
+box.id = '__sapAgentBox';
+box.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:2147483647;background:#fff;border:1px solid #d5dbe5;border-top:4px solid #1a5fd8;border-radius:10px;padding:12px 14px;font:13px/1.45 Arial,sans-serif;color:#1d2433;box-shadow:0 8px 24px rgba(0,0,0,.18);width:310px;max-height:70vh;overflow:auto';
+(document.body || document.documentElement).appendChild(box);
+}
+var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="color:#1a5fd8">SAP Fetch · tự động</b><span id="__sapX" title="Tắt SAP Fetch" style="cursor:pointer;color:#6b7486;font-size:16px;padding:0 4px">✕</span></div>';
+html += '<div style="color:#6b7486;font-size:11px;margin-bottom:6px">Đang đợi data từ glassRUN. Đơn nào được lọc trên glassRUN sẽ tự lấy SAP và gửi đi.</div>';
+if (!order.length) html += '<div style="color:#6b7486">Chưa có đơn nào từ glassRUN.</div>';
+order.forEach(function (no) {
+html += '<div style="display:flex;gap:8px;justify-content:space-between;padding:3px 0;border-top:1px solid #eef1f5"><b>' + no + '</b><span>' + (info[no] || '<span style="color:#6b7486">chờ</span>') + '</span><a href="#" data-no="' + no + '" style="color:#1a5fd8">lấy lại</a></div>';
+});
+box.innerHTML = html;
+box.querySelector('#__sapX').onclick = function () { window.__sapAgent.stop(); };
+Array.prototype.forEach.call(box.querySelectorAll('a[data-no]'), function (a) {
+a.onclick = function (ev) { ev.preventDefault(); handle(known[a.getAttribute('data-no')], true); };
+});
+var b = document.createElement('button');
+b.textContent = 'Dán dữ liệu JDE (cách cũ)';
+b.style.cssText = 'margin-top:8px;width:100%;padding:8px 12px;background:#fff;color:#1a5fd8;border:1px solid #1a5fd8;border-radius:8px;cursor:pointer;font-weight:bold';
+b.onclick = function () { legacy(); };
+box.appendChild(b);
+}
+rGet('op=ping').then(function () {
+render();
+tick();
+timer = setInterval(tick, 5000);
+}).catch(function () {
+delete window.__sapAgent;
+legacy();
+});
+})();
+</script>
+<script>
+/* ===== GIAO DIỆN ===== */
+const HINT_IDLE='<b>Bấm vào đây và nhấn Ctrl + V</b><br>Kết quả hiện ngay sau khi dán';
+let lastPayload=null,links=null,lastResult=null,filterMode='all';
+let flowData=null,pasteAt=0,runs=[],dataAt=0;
+let relayMode=false,relayOn=false,relayCur='',relayManual=false,relayParts={},relayNow=0,relayUseGr={},relayStamp={},relayBusy=false,relayOrders=[],relayCfg=null;
+const input=document.getElementById('pasteInput');
+setHint(HINT_IDLE);
+input.addEventListener('paste',e=>{e.preventDefault();handlePaste((e.clipboardData||window.clipboardData).getData('text'));});
+input.addEventListener('input',()=>{if(input.value.trim()){const t=input.value;input.value='';handlePaste(t);}});
+document.getElementById('filter').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;filterMode=b.dataset.f;document.querySelectorAll('#filter button').forEach(x=>x.classList.toggle('on',x===b));renderBlocks();});
+function setHint(h){document.getElementById('pasteHint').innerHTML='<div>'+h+'</div>';}
+function showMsg(t,k){const m=document.getElementById('msg');m.className='msg show '+(k||'err');m.textContent=t;}
+function handlePaste(text){
+ document.getElementById('msg').className='msg';
+ let p;try{p=JSON.parse(String(text||'').trim());}catch(e){return showMsg('Nội dung vừa dán không đúng định dạng. Hãy bấm "Copy kết quả SAP" trên tab SAP rồi dán lại.');}
+ if(p.kind==='jde')return showMsg('Đây mới là dữ liệu đơn hàng ('+(p.source||'JDE')+'). Hãy dán vào bookmark SAP Fetch trên tab SAP, rồi dán kết quả SAP vào đây.');
+ if(p.kind==='glassRunLinks'){links=Object.assign(links||{},p.links||{});relayMode=false;if(!lastPayload){flowData=p.flow||null;pasteAt=Date.now();dataAt=pasteAt;renderFlow();return showMsg('Đã nhận liên kết đơn tặng từ glassRUN. Hãy dán kết quả SAP để đối soát.','info');}showMsg('Đã nhận liên kết đơn tặng từ glassRUN, đang đối soát lại.','info');return rerun();}
+ if(p.kind!=='crosscheck'||!p.jde||!Array.isArray(p.sap))return showMsg('Nội dung vừa dán không phải kết quả từ SAP Fetch. Hãy copy lại trên tab SAP.');
+ if(lastPayload&&lastPayload.jde.po!==p.jde.po)links=null;
+ relayMode=false;
+ lastPayload=p;flowData=p.flow||null;pasteAt=Date.now();dataAt=pasteAt;runs=[];
+ run();
+}
+function rerun(){if(relayMode&&relayCur){processRelay(relayCur,true);return;}if(!lastPayload)return;run();}
+function run(){
+ const btn=document.getElementById('btnRerun');btn.disabled=true;btn.textContent='Đang đối soát...';
+ setHint('Đang đối soát...');
+ const t0=Date.now();
+ google.script.run
+  .withSuccessHandler(res=>{lastResult=res;runs.push({at:Date.now(),ms:Date.now()-t0});btn.disabled=false;btn.textContent='Đối soát lại';setHint('Dán dữ liệu đơn khác để đối soát tiếp');render();renderFlow();})
+  .withFailureHandler(err=>{btn.disabled=false;btn.textContent='Đối soát lại';setHint(HINT_IDLE);showMsg('Lỗi xử lý: '+err.message);})
+  .processCrossCheck({jde:lastPayload.jde,sap:lastPayload.sap,links:links});
+}
+function hhmmss(ms){return new Date(ms).toLocaleTimeString('vi-VN');}
+function render(){
+ const r=lastResult,v=document.getElementById('verdict');
+ const blocked=r.blocks.filter(b=>b.status==='blocked').length,mismatch=r.blocks.filter(b=>b.status==='mismatch').length,ok=r.blocks.filter(b=>b.status==='ok').length;
+ const last=runs[runs.length-1];
+ const right='Đối soát lần '+runs.length+' lúc '+hhmmss(last.at)+' (mất '+(last.ms/1000).toFixed(1).replace('.',',')+' giây)<br>Dữ liệu '+(relayMode?'gửi':'copy')+' lúc '+hhmmss(dataAt);
+ const phases=r.blocks.map(b=>b.phase);
+ const allPre=phases.length&&phases.every(x=>x==='pre'),allRe=phases.length&&phases.every(x=>x==='recheck');
+ if(r.errors.length){v.className='verdict stop';v.innerHTML='<div><div class="big">Chưa đối soát – thiếu dữ liệu</div><div class="meta">'+scopeLabel(r)+'</div></div><div class="right">'+right+'</div>';}
+ else{
+  const bad=blocked||mismatch;
+  v.className='verdict '+(blocked&&!mismatch&&!ok?'stop':bad?'bad':'ok');
+  let big;
+  if(blocked&&!mismatch&&!ok)big=blocked+' đơn chưa đối soát được';
+  else if(allPre)big=bad?'Có lệch – chưa nên xác nhận':'Khớp – có thể xác nhận';
+  else if(allRe)big=bad?'Kiểm tra lại: có lệch':'Kiểm tra lại: khớp';
+  else{const parts=[];if(ok)parts.push(ok+' đơn khớp');if(mismatch)parts.push(mismatch+' đơn lệch');if(blocked)parts.push(blocked+' đơn chưa đối soát được');big=parts.join(' · ');}
+  const sub=allPre?'Đơn đang chờ SUP xác nhận. Kết quả này dùng để quyết định có xác nhận hay không.':allRe?'Đơn đã giao và SUP đã xác nhận. Đây chỉ là kiểm tra lại.':'';
+  v.innerHTML='<div><div class="big">'+big+'</div><div class="meta">'+scopeLabel(r)+(sub?' · '+sub:'')+'</div></div><div class="right">'+right+'</div>';
+ }
+ document.getElementById('tabs').innerHTML=(r.source==='glassRUN'?'<span class="chip"><b>Nguồn glassRUN</b>không qua JDE'+(r.grStatus?' · '+esc(r.grStatus):'')+'</span>':'<span class="chip"><b>Nguồn JDE</b>theo mã đơn</span>')+
+  Object.keys(r.orderSearch||{}).map(no=>{const s=r.orderSearch[no];return '<span class="chip '+(s.found?'ok':'err')+'"><b>'+esc(no)+'</b>'+(s.found?s.tab:s.resolved?'không tìm thấy':'chưa tìm đủ')+'</span>';}).join('');
+ document.getElementById('notes').innerHTML=(r.notes||[]).map(n=>'<li>'+esc(n)+'</li>').join('');
+ document.getElementById('result').style.display='block';
+ document.getElementById('btnReset').style.display='inline-block';
+ renderBlocks();
+}
+function renderBlocks(){
+ const r=lastResult;if(!r)return;const el=document.getElementById('blocks');
+ if(r.errors.length){el.innerHTML='<div class="card block"><ul class="reasons">'+r.errors.map(e=>'<li>'+esc(e)+'</li>').join('')+'</ul></div>';return;}
+ el.innerHTML=r.blocks.map(b=>{
+  const pill={ok:'Khớp',mismatch:'Có lệch',blocked:'Chưa đối soát'}[b.status];
+  const ph=b.phase==='pre'?'<span class="phase pre">Chờ SUP xác nhận</span>':b.phase==='recheck'?'<span class="phase re">Đã xác nhận · kiểm tra lại</span>':'';
+  const title=(b.main?'Đơn chính '+esc(b.main.no):'Chưa xác định đơn chính')+ph;
+  const orders=(b.main?'<span>'+esc(b.main.no)+' · '+esc(b.main.type)+' · chính</span>':'')+b.gifts.map(g=>'<span>'+esc(g.no)+(g.type&&g.type!=='Tặng'?' · '+esc(g.type):'')+' · tặng</span>').join('');
+  const customer=b.main&&b.main.customer?esc(b.main.customer)+' · ':'';
+  let html='<div class="card block"><div class="bhead"><div><div class="title">'+title+'</div><div class="orders">'+customer+(b.main?'Ship To '+esc(b.main.shipTo)+' · Nhà xe '+esc(b.main.carrier)+'<br>':'')+orders+'</div></div><span class="pill '+b.status+'">'+pill+'</span></div>';
+  if(b.status==='blocked'){
+   html+='<ul class="reasons">'+b.reasons.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
+   if(b.reasons.some(x=>x.indexOf('glassRUN')>=0)&&!r.hasLinks)html+='<div class="empty" style="text-align:left;padding:0 16px 14px">Cách xử lý: mở glassRUN → trang <b>Đơn hàng</b> → bấm <b>GR Capture</b> → lọc theo từng số đơn chính → <b>Copy liên kết</b> → dán vào ô phía trên.</div>';
+   return html+'</div>';}
+  const s=b.summary;
+  html+='<div class="bstats"><span>Tổng mã<b>'+s.total+'</b></span><span class="ok">Khớp<b>'+s.ok+'</b></span><span class="warn">Lệch SL / ngoài đơn<b>'+s.warning+'</b></span><span class="err">Chưa có trên SAP<b>'+s.error+'</b></span><span class="'+(s.palletJde===s.palletSap?'ok':'err')+'">Pallet '+esc(r.source||'JDE')+' / SAP<b>'+fmt(s.palletJde)+' / '+fmt(s.palletSap)+'</b></span></div>';
+  const rows=b.items.filter(i=>filterMode==='all'||i.level!=='ok');
+  if(!rows.length)return html+'<div class="empty">Không có mã nào lệch.</div></div>';
+  html+='<div class="tbl"><table><thead><tr><th>Mã hàng</th><th>Tên sản phẩm</th><th>ĐVT</th><th class="num">'+esc(r.source||'JDE')+'</th><th class="num">SAP</th><th class="num">Chênh lệch</th><th>Trạng thái</th></tr></thead><tbody>';
+  rows.forEach(i=>{const parts=i.parts.length>1?'<span class="parts">'+i.parts.map(p=>esc(p.order)+': '+fmt(p.qty)).join(' · ')+'</span>':'';html+='<tr class="'+i.level+'"><td class="sku">'+esc(i.sku)+(i.isPallet?'<span class="tag">pallet</span>':'')+'</td><td class="name">'+esc(i.itemName)+'</td><td>'+esc(i.uom||'')+'</td><td class="num">'+fmt(i.jdeQty)+parts+'</td><td class="num">'+fmt(i.sapQty)+'</td><td class="num diff">'+(i.diff>0?'+':'')+fmt(i.diff)+'</td><td><span class="badge '+i.level+'">'+esc(i.status)+'</span></td></tr>';});
+  return html+'</tbody></table></div></div>';
+ }).join('');
+}
+function markAt(k){const m=flowData&&flowData.marks?flowData.marks.filter(x=>x.k===k):[];return m.length?m[m.length-1].at:0;}
+function dur(ms){const s=Math.max(0,Math.round(ms/1000));return s>=60?Math.floor(s/60)+' phút '+String(s%60).padStart(2,'0')+' giây':s+' giây';}
+function renderFlow(){
+ if(relayMode)return renderRelayFlow();
+ const el=document.getElementById('flow');if(!pasteAt){el.style.display='none';return;}
+ const rows=[];const add=(label,from,to,ops,gap)=>{const ok=from&&to;rows.push({label:label,ms:ok?to-from:0,ok:!!ok,ops:ops,gap:gap});};
+ const first=runs[0];
+ if(flowData){
+  if(markAt('gr_copy'))add('glassRUN: lọc đơn và copy',markAt('gr_start'),markAt('gr_copy'),'1 copy');
+  if(markAt('gr_copy')&&markAt('jde_paste'))add('Chuyển sang JDE và dán danh sách đơn',markAt('gr_copy'),markAt('jde_paste'),'1 dán',true);
+  if(markAt('jde_copy'))add('JDE: tìm đơn và copy dữ liệu',markAt('jde_paste')||markAt('jde_open'),markAt('jde_copy'),'1 copy');
+  if(markAt('jde_copy'))add('Chuyển sang SAP và dán dữ liệu JDE',markAt('jde_copy'),markAt('sap_paste'),'1 dán',true);
+  else if(markAt('gr_copy')&&markAt('sap_paste'))add('Chuyển sang SAP và dán dữ liệu glassRUN',markAt('gr_copy'),markAt('sap_paste'),'1 dán',true);
+  if(markAt('sap_copy'))add('SAP: lấy dữ liệu và copy kết quả',markAt('sap_paste'),markAt('sap_copy'),'1 copy');
+  if(markAt('sap_copy'))add('Chuyển sang trang này và dán kết quả',markAt('sap_copy'),pasteAt,'1 dán',true);
+ }else rows.push({label:'Dữ liệu không có giờ (dán từ bookmark bản cũ)',ok:true,ms:0,skip:true});
+ add('Đối soát trên trang',pasteAt,first?first.at:0,'');
+ const start=flowData&&flowData.start?flowData.start:pasteAt;
+ const total=first?first.at-start:0;
+ const copies=flowData?flowData.copies||0:0,pastes=(flowData?flowData.pastes||0:0)+1;
+ const head='<div class="fhead"><b>Tiến độ và thời gian</b><span class="fsum">'+(first?'Tổng <b>'+dur(total)+'</b> · ':'Đang chạy · ')+'<b>'+copies+'</b> lần copy · <b>'+pastes+'</b> lần dán'+(runs.length>1?' · đã đối soát lại <b>'+(runs.length-1)+'</b> lần':'')+'</span></div>';
+ el.innerHTML=head+rows.map(r=>'<div class="frow'+(r.ok?'':' wait')+'"><span class="fs">'+(r.skip?'–':r.ok?'✓':'')+'</span><span class="fn'+(r.gap?' gap':'')+'">'+esc(r.label)+'</span><span class="fo">'+esc(r.ops||'')+'</span><span class="ft">'+(r.skip?'':r.ok?dur(r.ms):'đang chờ')+'</span></div>').join('')+
+  '<div class="fnote">Tính từ lúc bấm GR Capture lần đầu (không dùng glassRUN thì từ lúc mở JDE Capture). Gồm cả thao tác tay và chuyển tab. Bấm "Đối soát lại" không tính thêm copy hay dán.</div>';
+ el.style.display='block';
+}
+
+/* ===== HỘP THƯ TỰ ĐỘNG ===== */
+function relaySet(ok,text){const e=document.getElementById('relayStat');e.className='rstat '+(ok?'ok':'bad');e.textContent=text;}
+function relayPoll(){
+ google.script.run
+  .withSuccessHandler(st=>{relayOn=true;relayNow=st.now;relayOrders=st.orders||[];relaySet(true,'Đang đợi data từ glassRUN, JDE, SAP · cập nhật '+hhmmss(Date.now()));relayRenderOrders();relayAuto();})
+  .withFailureHandler(()=>{relaySet(false,'Chưa kết nối được hộp thư. Hãy triển khai lại Web App bản mới nhất.');})
+  .relayState();
+}
+function relayLast(o){const g=o.parts.gr;return g?g.at:o.last;}
+function relayStampOf(o){return ['gr','grdata','jde','sap'].map(p=>o.parts[p]?o.parts[p].at:0).join('|')+'|'+(relayUseGr[o.order]?'g':'j');}
+function relayAuto(){
+ if(!relayOrders.length)return;
+ if(!relayManual||!relayOrders.some(o=>o.order===relayCur)){
+  const newest=relayOrders.slice().sort((a,b)=>relayLast(b)-relayLast(a))[0];
+  if(newest.order!==relayCur){relayCur=newest.order;}
+ }
+ const o=relayOrders.find(x=>x.order===relayCur);
+ if(!o||relayBusy)return;
+ const need=relayUseGr[o.order]?'grdata':'jde';
+ if(!o.parts[need]||!o.parts.sap)return;
+ const stamp=relayStampOf(o);
+ if(relayStamp[o.order]===stamp)return;
+ processRelay(o.order,false);
+}
+function processRelay(order,again){
+ const o=relayOrders.find(x=>x.order===order);
+ relayBusy=true;
+ const btn=document.getElementById('btnRerun');btn.disabled=true;btn.textContent='Đang đối soát...';
+ const t0=Date.now();
+ google.script.run
+  .withSuccessHandler(res=>{
+   relayBusy=false;btn.disabled=false;btn.textContent='Đối soát lại';
+   if(res.waiting&&res.waiting.length){relayRenderOrders();return;}
+   if(relayCur!==order&&!again){relayRenderOrders();return;}
+   relayMode=true;lastPayload=null;lastResult=res.result;relayParts=res.parts||{};relayNow=res.now;
+   if(!again||relayStamp[order]===undefined){runs=[];}
+   runs.push({at:Date.now(),ms:Date.now()-t0});
+   const ps=Object.keys(relayParts).map(k=>relayParts[k].at);dataAt=ps.length?Math.max.apply(null,ps):Date.now();
+   if(o)relayStamp[order]=relayStampOf({order:order,parts:relayParts});
+   document.getElementById('msg').className='msg';
+   setHint('Kết quả tự cập nhật khi có đơn mới');
+   render();renderFlow();relayRenderOrders();
+  })
+  .withFailureHandler(err=>{relayBusy=false;btn.disabled=false;btn.textContent='Đối soát lại';showMsg('Lỗi xử lý: '+err.message);})
+  .relayProcess(order,!!relayUseGr[order]);
+}
+function relaySelect(order){relayManual=true;relayCur=order;relayStamp[order]=undefined;processRelay(order,false);relayRenderOrders();}
+function relayUseGlass(order,ev){ev.stopPropagation();relayUseGr[order]=true;relayManual=true;relayCur=order;relayStamp[order]=undefined;processRelay(order,false);}
+function relayAfterClear(order){
+ const all=!order;
+ if(all||relayCur===order){relayManual=false;relayCur='';if(relayMode)resetAll();}
+ if(all){relayStamp={};relayUseGr={};}else{delete relayStamp[order];delete relayUseGr[order];}
+}
+function relayClearOne(order,ev){
+ ev.stopPropagation();
+ const b=ev.currentTarget;
+ if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='Bấm lại để xóa';setTimeout(()=>{if(b.isConnected){b.dataset.arm='';b.textContent='Xóa';}},3000);return;}
+ b.disabled=true;b.textContent='Đang xóa...';
+ google.script.run.withSuccessHandler(()=>{relayOrders=relayOrders.filter(o=>o.order!==order);relayAfterClear(order);relayRenderOrders();relayPoll();})
+  .withFailureHandler(err=>{b.disabled=false;b.textContent='Xóa';showMsg('Lỗi xóa: '+err.message);}).relayClear(order);
+}
+function relayClearAll(){
+ const b=document.getElementById('btnClearAll');
+ if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='Bấm lại để xóa tất cả';setTimeout(()=>{b.dataset.arm='';b.textContent='Xóa tất cả';},3000);return;}
+ b.disabled=true;b.textContent='Đang xóa...';
+ google.script.run.withSuccessHandler(()=>{b.disabled=false;b.dataset.arm='';b.textContent='Xóa tất cả';relayOrders=[];relayAfterClear('');relayRenderOrders();relayPoll();})
+  .withFailureHandler(err=>{b.disabled=false;b.dataset.arm='';b.textContent='Xóa tất cả';showMsg('Lỗi xóa: '+err.message);}).relayClear('');
+}
+function relayRenderOrders(){
+ const el=document.getElementById('relayOrders');
+ document.getElementById('btnClearAll').style.display=relayOrders.length?'':'none';
+ if(!relayOrders.length){el.innerHTML='<div class="empty" style="padding:8px">Chưa có đơn nào. Lọc đơn trên glassRUN, tìm đơn trên JDE, trang này sẽ tự nhận và đối soát.</div>';return;}
+ const list=relayOrders.slice().sort((a,b)=>relayLast(b)-relayLast(a)).slice(0,6);
+ el.innerHTML=list.map(o=>{
+  const pt=(label,k)=>'<span class="rp'+(o.parts[k]?' ok':'')+'">'+label+(o.parts[k]?' ✓ '+hhmmss(o.parts[k].at):' chờ')+'</span>';
+  const useGr=relayUseGr[o.order];
+  const canGr=!o.parts.jde&&o.parts.grdata&&o.parts.sap&&!useGr;
+  return '<div class="rrow'+(o.order===relayCur?' on':'')+'" onclick="relaySelect(\''+esc(o.order)+'\')"><b>'+esc(o.order)+'</b>'+
+   pt('glassRUN','gr')+(useGr?pt('glassRUN chi tiết','grdata'):pt('JDE','jde'))+pt('SAP','sap')+
+   (canGr?'<button class="btn" onclick="relayUseGlass(\''+esc(o.order)+'\',event)">Không có JDE: đối soát bằng dữ liệu glassRUN</button>':'')+'<button class="btn" style="margin-left:auto" onclick="relayClearOne(\''+esc(o.order)+'\',event)">Xóa</button></div>';
+ }).join('');
+}
+function renderRelayFlow(){
+ const el=document.getElementById('flow');
+ const P=relayParts||{};const src=P.jde||P.grdata;
+ if(!src||!P.sap){el.style.display='none';return;}
+ const start=P.gr?P.gr.first:src.first;
+ const jdeAt=P.jde&&!relayUseGr[relayCur]?P.jde.at:(P.grdata?P.grdata.at:0);
+ const rows=[];
+ if(P.gr)rows.push({label:'glassRUN: lọc đơn và gửi',t:P.gr.first,d:0,info:'tự gửi'});
+ if(jdeAt)rows.push({label:relayUseGr[relayCur]?'glassRUN: dữ liệu chi tiết (không qua JDE)':'JDE: nhận đơn, tìm xong và gửi (tính từ lúc nhận đơn)',t:jdeAt,d:jdeAt-start,info:'tự gửi'});
+ rows.push({label:'SAP: tự lấy dữ liệu (chạy song song với JDE)',t:P.sap.at,d:P.sap.at-start,info:'tự gửi'});
+ const ready=Math.max(jdeAt,P.sap.at);
+ const last=runs[runs.length-1];
+ const end=relayNow||ready;
+ rows.push({label:'Đối soát trên trang',t:end,d:Math.max(0,end-ready),info:''});
+ const total=end-start;
+ const head='<div class="fhead"><b>Tiến độ và thời gian</b><span class="fsum">Tổng <b>'+dur(total)+'</b> · <b>0</b> lần copy · <b>0</b> lần dán (tự động)'+(runs.length>1?' · đã đối soát lại <b>'+(runs.length-1)+'</b> lần':'')+'</span></div>';
+ el.innerHTML=head+rows.map(r=>'<div class="frow"><span class="fs">✓</span><span class="fn">'+esc(r.label)+'</span><span class="fo">'+esc(hhmmss(r.t))+'</span><span class="ft">'+(r.d||r.info===''?dur(r.d):'')+'</span></div>').join('')+
+  '<div class="fnote">Giờ lấy từ máy chủ. Mốc đầu là lúc glassRUN gửi đơn. Thời gian JDE gồm cả lúc bạn tìm đơn trên JDE. "Đối soát lại" không tính thêm thao tác.</div>';
+ el.style.display='block';
+}
+function copyBm(id,btn){
+ const done=cfg=>{
+  const src=document.getElementById(id).textContent.replace(/__URL__/g,cfg.url).replace(/__KEY__/g,cfg.key).trim().replace(/\s*\n\s*/g,' ');
+  const text='javascript:'+encodeURIComponent(src);
+  const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
+  btn.textContent='Đã copy';setTimeout(()=>{btn.textContent='Copy bookmark';},1500);
+  document.getElementById('bmMsg').textContent='Địa chỉ hộp thư: '+cfg.url;
+ };
+ if(relayCfg)return done(relayCfg);
+ google.script.run.withSuccessHandler(c=>{relayCfg=c;done(c);}).withFailureHandler(e=>{document.getElementById('bmMsg').textContent='Lỗi: '+e.message;}).getRelayConfig();
+}
+relayPoll();setInterval(relayPoll,5000);
+function copyTable(){
+ const r=lastResult;if(!r)return;
+ const lines=[r.mode==='order'?'Đối soát theo mã đơn – nguồn '+(r.source||'JDE'):'PO '+r.po];
+ if(r.errors.length)r.errors.forEach(e=>lines.push('CHƯA ĐỐI SOÁT: '+e));
+ r.blocks.forEach(b=>{
+  lines.push('');
+  const ph=b.phase==='pre'?'Chờ SUP xác nhận':b.phase==='recheck'?'Đã xác nhận (kiểm tra lại)':'';
+  lines.push(['Đơn chính '+(b.main?b.main.no:'?'),'Đơn tặng: '+(b.gifts.map(g=>g.no).join(', ')||'-'),ph,{ok:'Khớp',mismatch:'Có lệch',blocked:'Chưa đối soát'}[b.status]].filter(Boolean).join('\t'));
+  if(b.status==='blocked'){b.reasons.forEach(x=>lines.push('- '+x));return;}
+  lines.push(['Mã hàng','Tên sản phẩm','ĐVT',r.source||'JDE','SAP','Chênh lệch','Trạng thái'].join('\t'));
+  b.items.filter(i=>filterMode==='all'||i.level!=='ok').forEach(i=>lines.push([i.sku,i.itemName,i.uom||'',i.jdeQty,i.sapQty,i.diff,i.status].join('\t')));
+ });
+ const ta=document.createElement('textarea');ta.value=lines.join('\n');document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
+ const btn=document.getElementById('btnCopy');btn.textContent='Đã copy';setTimeout(()=>{btn.textContent='Copy kết quả (Excel/Zalo)';},1500);
+}
+function resetAll(){relayMode=false;relayManual=false;relayCur='';relayStamp={};relayUseGr={};lastPayload=null;lastResult=null;links=null;flowData=null;pasteAt=0;dataAt=0;runs=[];
+ ['result','flow'].forEach(i=>document.getElementById(i).style.display='none');
+ document.getElementById('btnReset').style.display='none';document.getElementById('msg').className='msg';setHint(HINT_IDLE);}
+function scopeLabel(r){return r.mode==='order'?'Theo mã đơn · nguồn '+esc(r.source||'JDE'):'PO <b>'+esc(r.po)+'</b>';}
+function fmt(n){return Number(n||0).toLocaleString('vi-VN',{maximumFractionDigits:3});}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+</script>
+</body>
+</html>

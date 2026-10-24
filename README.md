@@ -1,105 +1,60 @@
-# Thiệp cưới online creat by Tiến Lợi
+# Final Check – Đối soát chốt chặn xuất hàng
 
-Thiệp cưới tĩnh (HTML/CSS/JS thuần, không cần build), chạy trực tiếp trên GitHub Pages.
-Xác nhận tham dự và lời chúc được lưu vào Google Sheet qua Google Apps Script.
+Công cụ đối soát đơn xuất hàng giữa JDE và SAP trước khi xe ra cổng. Chạy trên Google Apps Script (Web App) kết hợp 3 bookmark gắn vào 3 trang: glassRUN, JDE, SAP.
 
-## Cấu trúc thư mục
+## Thành phần
 
-```
-wedding-invite/
-├─ index.html            Khung trang, 12 khối
-├─ css/
-│  ├─ base.css           Màu, font, nút, khung ảnh
-│  └─ sections.css       Giao diện từng khối
-├─ js/
-│  ├─ config.js          ⭐ File duy nhất cần sửa để đổi thông tin
-│  ├─ app.js             Đổ dữ liệu vào trang, album, mừng cưới
-│  ├─ countdown.js       Đếm ngược
-│  ├─ calendar.js        Lịch tháng + thêm vào Google Calendar
-│  ├─ guestbook.js       Đọc lời chúc từ Google Sheet
-│  └─ rsvp.js            Form xác nhận tham dự
-├─ effects/              ✨ Toàn bộ hiệu ứng
-│  ├─ effects.css        Mọi animation (hiện dần, mở thiệp, sóng, nút nhạc…)
-│  ├─ reveal.js          Hiện dần khi cuộn
-│  ├─ cover.js           Màn mở thiệp + chữ chạy từng ký tự
-│  ├─ petals.js          Cánh hoa rơi
-│  ├─ music.js           Nhạc nền + nút bật/tắt
-│  └─ lightbox.js        Xem ảnh album phóng to
-├─ assets/
-│  ├─ images/            📷 Bạn tự upload ảnh vào đây (xem bảng bên dưới)
-│  ├─ music/             🎵 wedding.mp3
-│  └─ qr/                Mã QR mừng cưới (groom.png, bride.png)
-└─ backend/
-   ├─ Code.gs            Google Apps Script (ghi Sheet + lấy dữ liệu về)
-   └─ README.md          Cách cài backend
-```
+| Thư mục | Nội dung |
+|---|---|
+| `apps-script/Code.gs` | Phần xử lý trên Google: nhận dữ liệu từ 3 bookmark ("hộp thư"), áp quy tắc trạng thái, đối soát số lượng |
+| `apps-script/Index.html` | Trang web đối soát: hộp thư tự động, kết quả, thời gian, nút đối soát lại, nút xóa dữ liệu |
+| `bookmarks/gr-capture.js` | Bookmark glassRUN: lấy đơn chính và đơn tặng, tự gửi lên hộp thư |
+| `bookmarks/jde-capture.js` | Bookmark JDE: tự điền mã đơn, bấm Find, thu dữ liệu, tự gửi |
+| `bookmarks/sap-fetch.js` | Bookmark SAP: tự lấy dữ liệu SAP của đơn mới và gửi |
+| `tools/embed_bookmarks.py` | Đưa mã 3 bookmark vào `Index.html` |
+| `tests/` | Kiểm thử mô phỏng (không cần JDE hay SAP thật) |
 
-## 12 khối của thiệp
+## Cài đặt
 
-1. Màn mở thiệp (có nút SKIP) → 2. Bìa → 3. Lời mời (tên khách) → 4. Hai họ + các buổi lễ
-→ 5. Lịch + đếm ngược → 6. Lịch trình → 7. Địa điểm + bản đồ → 8. Album → 9. Sổ lưu bút
-→ 10. Mừng cưới → 11. Xác nhận tham dự → 12. Lời cảm ơn
+1. Tạo dự án Google Apps Script, dán `Code.gs` và `Index.html`.
+2. Triển khai thành Web App: Execute as **Me**, Who has access **Anyone**. Mỗi lần sửa code phải triển khai lại phiên bản mới.
+3. Mở trang Web App, vào mục **Cài bookmark tự động**, bấm **Copy bookmark** cho từng cái rồi dán vào ô URL của một bookmark trình duyệt.
+4. Khóa bí mật của hộp thư tự sinh và nằm trong Script Properties (`RELAY_SECRET`), không nằm trong code. Địa chỉ Web App và khóa chỉ có trong bookmark do trang tạo ra, **không đưa lên GitHub**.
 
-## Việc cần làm (theo thứ tự)
+## Cách chạy mỗi ca
 
-1. **Sửa `js/config.js`**: tên cô dâu, tên bố mẹ hai bên, ngày giờ các buổi lễ, địa điểm, tài khoản mừng cưới.
-   Mọi chỗ có dấu `[ ... ]` là thông tin giữ chỗ.
-2. **Cài backend** theo `backend/README.md` (5 phút), rồi dán link `/exec` vào `apiUrl` trong `config.js`
-   (hiện đã điền sẵn link bạn cung cấp).
-3. **Upload ảnh / nhạc** vào `assets/` đúng tên file như bảng dưới. Chưa có ảnh thì trang vẫn chạy,
-   chỗ ảnh hiện ô giữ chỗ ghi tên file cần thêm.
-4. **Đưa lên GitHub Pages** (bên dưới).
+1. Mở 3 tab glassRUN, JDE, SAP. Bấm bookmark tương ứng một lần trên mỗi tab.
+2. glassRUN: lọc theo số đơn chính. Đơn tự gửi. Bấm **Copy đơn** để lấy danh sách cho JDE.
+3. JDE: bấm **Lấy danh sách từ clipboard và chạy**. Tool tự điền mã vào ô Order Number và bấm Find. Dùng màn hình tìm chung (ô Order Type để `*`) thì một lần Find cho cả SO, S5, S6, ST, không phải chuyển tab. Nếu đang ở từng tab riêng, panel nhắc chuyển tab SO → S5 → S6 (đơn ST có tab ST).
+4. SAP: tự lấy dữ liệu đơn mới, không cần thao tác.
+5. Trang Final Check tự đối soát khi JDE và SAP đủ dữ liệu.
 
-## Ảnh cần upload
+Trang JDE chặn nhận dữ liệu từ hộp thư, nên JDE chỉ gửi đi, danh sách đơn phải lấy từ clipboard. Nếu hộp thư lỗi, vẫn dùng được cách copy và dán thủ công trên trang.
 
-| File | Dùng ở | Gợi ý |
-|---|---|---|
-| `assets/images/cover.jpg` | Màn mở thiệp (toàn màn hình) | Dọc, 1080×1920, chủ thể ở giữa |
-| `assets/images/hero.jpg` | Bìa thiệp (khung polaroid) | Dọc tỉ lệ 3:4, ví dụ 900×1200 |
-| `assets/images/gallery-01.jpg` … `gallery-09.jpg` | Album | Dọc tỉ lệ 3:4, ~900×1200, mỗi ảnh < 300 KB |
-| `assets/images/ending.jpg` | Lời cảm ơn | Dọc hoặc vuông, 1080×1350 |
-| `assets/images/og.jpg` | Ảnh xem trước khi gửi link qua Zalo/Facebook | 1200×630 |
-| `assets/qr/groom.png`, `bride.png` | QR mừng cưới | Vuông. Không có thì xoá dòng `qr` trong `config.js` |
-| `assets/music/wedding.mp3` | Nhạc nền | Dưới 5 MB. Dùng bản nhạc bạn có quyền sử dụng |
+## Đơn ST (chuyển kho)
 
-Đổi số lượng ảnh album: sửa `gallery.count` trong `config.js`. Nên nén ảnh (ví dụ squoosh.app) để thiệp mở nhanh trên 4G.
+- Đơn có 4 số đầu nhỏ hơn 6221 (hiện nay 6012…) được coi là ST. ST là đơn duy nhất, không có đơn tặng.
+- Trạng thái áp dụng giống SO, S5, S6.
+- SAP: tìm theo trường `st` thay vì `SalesOrder`.
+- Lưới ST trên JDE phải cùng định dạng cột với lưới SO (ô định dạng của lưới).
 
-## Đưa lên GitHub Pages
+## Quy tắc trạng thái (Code.gs)
 
-1. Tạo repository mới trên GitHub, upload toàn bộ nội dung thư mục này (hoặc `git push`).
-2. Vào **Settings → Pages → Build and deployment → Source: Deploy from a branch**,
-   chọn nhánh `main`, thư mục `/ (root)`, bấm **Save**.
-3. Sau 1–2 phút trang chạy tại `https://<tên-github>.github.io/<tên-repo>/`.
+| Nhóm | Điều kiện |
+|---|---|
+| Chờ SUP xác nhận | Next Status = 545 |
+| Đã xác nhận (chỉ kiểm tra lại) | Last Status = 574, 620 hoặc 900, hoặc Next Status = 620 |
 
-## Gửi thiệp theo tên từng khách
+- Mọi dòng của đơn chính và đơn tặng phải cùng một nhóm, nếu không đơn bị chặn.
+- Không xét dòng két/vỏ (LineType DP) và dòng Last Status = 980.
+- Nguồn dữ liệu glassRUN (không có JDE) không kiểm tra trạng thái, nhưng chặn nếu có dòng thiếu số lượng.
 
-Thêm `?to=` và tên khách vào cuối link, ví dụ:
+## Phát triển
 
-```
-https://<tên-github>.github.io/<tên-repo>/?to=Anh%20Nam
-```
+- Sửa mã bookmark trong `bookmarks/`, sau đó chạy `python3 tools/embed_bookmarks.py` để cập nhật `Index.html`.
+- Kiểm thử: `npm install` rồi `npm test`.
+- Quy ước: không dùng comment `//` trong mã bookmark, vì khi tạo bookmark các dòng bị nối thành một dòng.
 
-Tên sẽ hiện ở khối lời mời và tự điền sẵn vào form xác nhận. Không có `?to=` thì hiện "Quý khách".
-Mẹo: dùng Google Sheet với công thức `=ENCODEURL(A2)` để tạo nhanh link cho cả danh sách khách.
+## Thiết kế bởi
 
-## Xem thử trên máy
-
-Mở bằng một server tĩnh (không nên mở thẳng file vì một số trình duyệt chặn nhạc/bản đồ):
-
-```
-python3 -m http.server 8080
-```
-
-rồi vào http://localhost:8080.
-
-## Lưu ý
-
-- `apiUrl` nằm trong code công khai trên GitHub. Ai có link đều gửi được dữ liệu vào Sheet của bạn.
-  Backend đã giới hạn độ dài, chặn công thức độc hại và có ô bẫy spam, nhưng nếu cần chặt hơn hãy kiểm duyệt định kỳ.
-  Muốn ẩn một lời chúc khỏi thiệp, chỉ cần xoá dòng đó trong Sheet.
-- Thống kê số khách: mở trực tiếp Google Sheet, hoặc dùng `?action=summary` (xem `backend/README.md`).
-
-
-## Đổi font chữ
-
-Mở `css/base.css`, sửa khối **FONT CHỮ** ở đầu file (`--font-body`, `--font-display`, `--font-names`, …). Thiệp tự tải font Google tương ứng (file `js/fonts.js`), không phải thêm link nào. Ở cuối file có 6 bộ font mẫu (A–F) để chép thay vào. Chọn font có hỗ trợ tiếng Việt (xem trên fonts.google.com, lọc "Vietnamese"). Font chữ viết tay: đặt `--names-anim: word` để tên không bị đứt nét.
+Logistics Hoc Mon – Designed by Tien Loi.

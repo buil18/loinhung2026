@@ -1,0 +1,12 @@
+{
+  "name": "final-check",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Final Check - doi soat chot chan xuat hang JDE va SAP",
+  "scripts": {
+    "test": "cd tests && node t_clear.js && node t900.js && node e2e_page6.js && node e2e_auto.js && node e2e_sap_stop.js && node e2e_st.js && node e2e_gr_st.js"
+  },
+  "devDependencies": {
+    "jsdom": "^22.1.0"
+  }
+}

@@ -1,0 +1,10 @@
+const {makeServer}=require('./mocks.js');
+const srv=makeServer('../apps-script/Code.gs');const cfg=srv.x.getRelayConfig();
+const put=(o,p,d)=>srv.x.doPost({postData:{contents:JSON.stringify({k:cfg.key,op:'put',order:o,part:p,data:d})}});
+['62210001','62210002'].forEach(o=>{put(o,'gr',{links:{[o]:[]}});put(o,'jde',{x:'y'.repeat(70000)});put(o,'sap',{rows:[]});});
+const names=()=>srv.x.relayState().orders.map(o=>o.order).sort().join(',');
+console.log('before',names());
+console.log(JSON.stringify(srv.x.relayClear('62210001')),'after one:',names());
+put('62210001','gr',{links:{'62210001':[]}});
+console.log('re-put gr only:',JSON.stringify(srv.x.relayState().orders.find(o=>o.order==='62210001').parts?Object.keys(srv.x.relayState().orders.find(o=>o.order==='62210001').parts):0));
+console.log(JSON.stringify(srv.x.relayClear('')),'after all:',JSON.stringify(names()));

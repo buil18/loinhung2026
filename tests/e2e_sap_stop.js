@@ -1,0 +1,23 @@
+const {JSDOM}=require('jsdom');const fs=require('fs');
+const {makeServer}=require('./mocks.js');
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+(async()=>{
+ const srv=makeServer('../apps-script/Code.gs');const cfg=srv.x.getRelayConfig();
+ const put=(o,p,d)=>srv.x.doPost({postData:{contents:JSON.stringify({k:cfg.key,op:'put',order:o,part:p,data:d})}});
+ put('62210001','gr',{links:{'62210001':[]}});
+ put('62210002','gr',{links:{'62210002':[]}});put('62210002','sap',{rows:[{a:1}]});
+ const code=fs.readFileSync('../bookmarks/sap-fetch.js','utf8').replace(/__URL__/g,cfg.url).replace(/__KEY__/g,cfg.key).replace('var GRACE = 120000','var GRACE = 1000').replace(/\s*\n\s*/g,' ');
+ await sleep(2500);
+ const w=new JSDOM('<body></body>',{runScripts:'outside-only',pretendToBeVisual:true,url:'https://sap.test/'}).window;
+ const calls={};const urls=[];
+ w.fetch=(u,o)=>{ if(u.indexOf('/sap/opu')===0){const no=/'(\d+)'/.exec(u)[1];calls[no]=(calls[no]||0)+1;urls.push(decodeURIComponent(u).replace(/^.*filter=/,''));const rows=no==='62210004'?[]:[{SalesOrder:no,MaHang:'1',SoLuong:-1}];return Promise.resolve({ok:true,json:()=>Promise.resolve({d:{results:rows}})});} return srv.fetchMock(u,o);};
+ w.eval(code);
+ await sleep(300);
+ put('62210003','gr',{links:{'62210003':[]}});put('62210004','gr',{links:{'62210004':[]}});put('60128925','gr',{links:{'60128925':[]}});
+ await sleep(16000);
+ console.log('calls',JSON.stringify(calls));console.log('filters',JSON.stringify(urls));
+ console.log(w.document.getElementById('__sapAgentBox').textContent.replace(/\s+/g,' '));
+ const a=[...w.document.querySelectorAll('a[data-no]')].find(x=>x.dataset.no==='62210001');a.click();await sleep(300);
+ console.log('manual calls',JSON.stringify(calls));
+ process.exit(0);
+})();

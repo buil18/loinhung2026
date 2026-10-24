@@ -1,0 +1,50 @@
+const {JSDOM}=require('jsdom');const fs=require('fs');
+const {makeServer}=require('./mocks.js');
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function jdeRow(order,type,line,item,qty,last,next){const c=Array(70).fill('x');c[1]='blank.gif';c[2]=order;c[3]=type;c[5]=line;c[11]='CTY';c[12]='Bia';c[13]=item;c[14]=qty;c[15]='CS';c[20]='23/10/26';c[22]='10260945';c[27]=last;c[28]=next;c[30]='';c[35]='';c[40]='25,009,110';c[45]=' 100000';c[46]='S';c[69]='1';return '{VAL:"'+c.join('\\t')+'",EVT:203,';}
+function sigma(){const c=Array(70).fill('x');c[1]='sigma.gif';return '{VAL:"'+c.join('\\t')+'",EVT:203,';}
+const DATA={SO:{'62210001':[['1.000','10136266','780','540','545']]},S5:{'62210002':[['1.000','10099999','10','540','545']]},S6:{}};
+(async()=>{
+ const srv=makeServer('../apps-script/Code.gs');const cfg=srv.x.getRelayConfig();
+ const code=fs.readFileSync('../bookmarks/jde-capture.js','utf8').replace(/__URL__/g,cfg.url).replace(/__KEY__/g,cfg.key).replace(/\s*\n\s*/g,' ');
+ const dom=new JSDOM('<body><div><input title="Order Number" id="C0_9" value="*"><input title="Order Type" id="C0_13" readonly value="SO"><input title="Customer PO" id="C0_19" value="*"></div><img id="hc_Find" title="Find"></body>',{runScripts:'outside-only',pretendToBeVisual:true,url:'https://jde.test/'});
+ const w=dom.window;
+ w.fetch=()=>Promise.reject(new TypeError('blocked'));
+ const finds=[];
+ const RealX=w.XMLHttpRequest;
+ RealX.prototype.send=function(){};
+ const OrigAppend=w.Node.prototype.appendChild;
+ w.Node.prototype.appendChild=function(n){ if(n.tagName==='SCRIPT'&&n.src){setTimeout(()=>n.onerror&&n.onerror(),5);return n;} return OrigAppend.call(this,n);};
+ const origXhr=w.XMLHttpRequest;
+ w.XMLHttpRequest=function(){const x=new origXhr();let isRelay=false;const o=x.open;
+  const api={open:(m,u)=>{isRelay=true;},setRequestHeader(){},addEventListener(){},send(){setTimeout(()=>api.onerror&&api.onerror(),5);}};return api;};
+ w.XMLHttpRequest.prototype=origXhr.prototype;
+ w.HTMLFormElement.prototype.submit=function(){const inp=this.querySelector('input[name=payload]');srv.x.doPost({parameter:{payload:inp.value},postData:{contents:''}});};
+ const doc=w.document;
+ doc.getElementById('hc_Find').onclick=function(){
+  const no=doc.getElementById('C0_9').value, tab=doc.getElementById('C0_13').value;
+  finds.push(tab+':'+no);
+  const lines=DATA[tab][no]||[];
+  const body='EVTS'+lines.map(l=>jdeRow(no,tab,l[0],l[1],l[2],l[3],l[4])).join('')+sigma();
+  const x=new origXhr();Object.defineProperty(x,'responseText',{get:()=>body});
+  setTimeout(()=>{x.send();x.dispatchEvent(new w.Event('load'));},50);
+ };
+ const orig={order:'62210001'};
+ Object.defineProperty(w.navigator,'clipboard',{value:{readText:()=>Promise.resolve(JSON.stringify({kind:'glassRunLinks',links:{'62210001':['62210002','62210003']},capturedAt:'x'}))}});
+ w.eval(code);await sleep(500);
+ const txt=()=>doc.getElementById('__jdeCaptureBox').textContent.replace(/\s+/g,' ');
+ const btn=re=>[...doc.querySelectorAll('#__jdeCaptureBox button')].find(b=>re.test(b.textContent));
+ console.log('1 panel:',txt().slice(0,200));
+ btn(/clipboard và chạy/).click();
+ await sleep(3500);
+ console.log('2 finds:',finds.join(' | '));console.log('2 panel:',txt().slice(0,380));
+ doc.getElementById('C0_13').value='S5';
+ await sleep(3500);
+ console.log('3 finds:',finds.join(' | '));console.log('3 panel:',txt().slice(0,380));
+ doc.getElementById('C0_13').value='S6';
+ await sleep(3500);
+ console.log('4 finds:',finds.join(' | '));console.log('4 panel:',txt().slice(0,420));
+ await sleep(5500);
+ console.log('relay parts:',JSON.stringify(srv.x.relayState().orders.map(o=>[o.order,Object.keys(o.parts)])));
+ process.exit(0);
+})();
